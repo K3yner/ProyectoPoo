@@ -20,7 +20,7 @@ class Biblioteca:
         self.__registros[nivel].append(registro)
  
     def obtener_por_nivel(self, nivel):
-        """Devuelve todos los registros guardados para un nivel dado."""
+        
         return self.__registros.get(nivel, [])
  
     def obtener_todos(self):

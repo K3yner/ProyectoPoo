@@ -24,4 +24,13 @@ class controlador:
         self.boton_cargar = tk.boton(
             self.ventana, 
             text="1. Cargar Archivo",
+            command=self. cargar_archivo,
         )
+        self.boton_cargar.pack(pady=10)
+        #etiqueta del archivo
+        self.labelarchivo = tk.Label(
+            self.ventana,
+            text="ningun archivo seleccionado",
+            font=("Arial", 12, "italic")
+        )
+        self.label_archivo.pack(pady=5)

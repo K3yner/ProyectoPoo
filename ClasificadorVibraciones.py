@@ -24,12 +24,28 @@ class ClasificadorVibraciones:
         else:
             return "alta"
 
+    def recomendaciones(self, magnitud):
+        """
+        Devuelve recomendiaciones basadas en los niveles de riesgo
+        """
+        nivel=self.clasificarMagnitud(magnitud)
+        if nivel=="baja":
+            return "El nivel de la vibración es segura, se encuentran dentro del rango normal."
+        elif nivel== "media":
+            return "El nivel de la vibración es moderada, Se recomienda observar la aparición de grietas. "
+        else:
+            return "Nivel alto de vibración. Riesgo potencial para la estructura."
+        
+
+
 #Prueba
 if __name__=="__main__":
-    clasificador = ClasificadorVibraciones(limiteMedio=1.5, limiteAlto=.0)
+    clasificador = ClasificadorVibraciones(limiteMedio=1.5, limiteAlto=3.0)
     print("-----Prueba-----")
     print("Prueba, valor 0.8", clasificador.clasificarMagnitud(0.08))
     print("Prueba, valor 2.1", clasificador.clasificarMagnitud(2.1))
     print("Prueba, valor 4.5", clasificador.clasificarMagnitud(4.5))
-
-        
+    for val in [0.8, 2.1, 4.5]:
+        nivel=clasificador.clasificarMagnitud(val)
+        reco=clasificador.recomendaciones(val)
+        print(f"Magnitud {val}, {nivel}: {reco}")

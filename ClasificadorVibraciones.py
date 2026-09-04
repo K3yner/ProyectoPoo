@@ -35,7 +35,27 @@ class ClasificadorVibraciones:
             return "El nivel de la vibración es moderada, Se recomienda observar la aparición de grietas. "
         else:
             return "Nivel alto de vibración. Riesgo potencial para la estructura."
-        
+
+    def muestraClasificacion(self, muestra):
+        """
+        Recibe una muestra, extrae la magnitud y devuelve la clasificación y recomendación
+        """
+        if isinstance(muestra,(int, float)):
+            magnitud=muestra
+        elif hasattr(muestra, "calcular magnitud"):
+            magnitud=muestra.calcularMagnitud()
+        else:
+            raise TypeError("El dato ingresado no es válido, ingrese un número o muestra válida.")
+
+        nivel=self.clasificarMagnitud(magnitud)
+        reco=self.recomendaciones(magnitud)
+        return{
+            "Magnitud":magnitud,
+            "Nivel":nivel,
+            "Recomendacion:":reco
+        }
+
+    
 
 
 #Prueba
@@ -49,3 +69,6 @@ if __name__=="__main__":
         nivel=clasificador.clasificarMagnitud(val)
         reco=clasificador.recomendaciones(val)
         print(f"Magnitud {val}, {nivel}: {reco}")
+
+    resultado=clasificador.muestraClasificacion(2.5)
+    print("Resultado:", resultado)

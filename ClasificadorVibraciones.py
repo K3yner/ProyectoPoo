@@ -38,12 +38,12 @@ class ClasificadorVibraciones:
 
     def muestraClasificacion(self, muestra):
         """
-        Recibe una muestra, extrae la magnitud y devuelve la clasificación y recomendación
+        Recibe una muestra, extrae la magnitud y devuelve la clasificación y recomendación.
         """
         if isinstance(muestra,(int, float)):
             magnitud=muestra
-        elif hasattr(muestra, "calcular magnitud"):
-            magnitud=muestra.calcularMagnitud()
+        elif hasattr(muestra, "calcular_magnitud"):
+            magnitud=muestra.calcular_magnitud()
         else:
             raise TypeError("El dato ingresado no es válido, ingrese un número o muestra válida.")
 

@@ -1,36 +1,15 @@
 import os
 # aca se importaran las otras clases, creo
 class controlador:
-    def __init__(self, ventana_principal):
+    def _init_(self, recolector, csv_manager, clasificador, biblioteca):
         """
-        constructor de la clase controlador.
-        Inicializa la ventada de la interfaz gráfica y configurs todos sus botonoes"""
-
-        self.ventana = ventana_principal
-        self.vantana.title("Sistema de Medición de Vibraciones") 
-        self.ventana.geometry("500x400")
-        self.ruta_archivo = None
-        #atributo que guarda la ruta del archivo
-
-        # --- Componentes de la Interfaz --- 
-
-        self.label.titulo = tk.Label(
-            self.ventana,
-            text="Medidor de Vibraciones Vehiculares",
-            font=("Arial", 16, "bold")
-        )
-        self.label_titulo.pack(pady=15)
-        #boton de interaccion 
-        self.boton_cargar = tk.boton(
-            self.ventana, 
-            text="1. Cargar Archivo",
-            command=self. cargar_archivo,
-        )
-        self.boton_cargar.pack(pady=10)
-        #etiqueta del archivo
-        self.labelarchivo = tk.Label(
-            self.ventana,
-            text="ningun archivo seleccionado",
-            font=("Arial", 12, "italic")
-        )
-        self.label_archivo.pack(pady=5)
+        Args:
+            recolector: instancia de RecolectorDatos (conexión con phyphox).
+            csv_manager: instancia de CSVManager (lectura/escritura de CSV).
+            clasificador: instancia de ClasificadorVibraciones.
+            biblioteca: instancia de Biblioteca (almacena los resultados).
+        """
+        self.__recolector = recolector
+        self.__csv_manager = csv_manager
+        self.__clasificador = clasificador
+        self.__biblioteca = biblioteca

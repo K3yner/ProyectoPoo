@@ -32,3 +32,22 @@ class controlador:
         clasifica y guarda el resultado en la biblioteca.
         """
         filas = self._csv_manager.leer(nombre_archivo)
+
+        for fila in filas:
+            timestamp, acc_x, acc_y, acc_z = fila
+            muestra = Muestra(float(timestamp), float(acc_x), float(acc_y), float(acc_z))
+
+            resultado = self.__clasificador.muestraClasificacion(muestra)
+
+            registro = RegistroClasificado(
+                timestamp=muestra.get_timestamp(),
+                magnitud=resultado["Magnitud"],
+                nivel=resultado["Nivel"],
+                recomendacion=resultado["Recomendacion"]
+            )
+
+            self.__biblioteca.agregar(registro)
+
+    def obtener_resumen(self):
+        """Devuelve cuántos registros hay guardados por cada nivel de vibración."""
+        return self.__biblioteca.contar_por_nivel()

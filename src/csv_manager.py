@@ -14,7 +14,7 @@ import csv
 class CSVManager:
     
 
-    def __init__(self, direccion_relativa="datos_experimentos"):
+    def __init__(self, direccion_relativa="datos_experimento"):
         
         self.__direccion_relativa = direccion_relativa
         if not os.path.exists(self.__direccion_relativa):

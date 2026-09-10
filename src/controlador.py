@@ -23,12 +23,30 @@ class Controlador:
 
     def iniciar_medicion(self):
         
-        self.__recolector.iniciar()
+        self.__recolector._iniciar_medicion()
 
     def detener_medicion(self):
-      
-        self.__recolector.detener()
+        self.__recolector._detener_medicion()
+
+        if not self.__recolector.getDatos():
+            datos_json = self.__recolector._obtener_datos()
+            if datos_json is not None:
+                self.__recolector._procesar_datos_json(datos_json)
+
+        if not self.__recolector.getDatos():
+            print("No se generó ningún archivo de medición: no hay datos capturados.")
+            return
+
+        ruta_csv = self.__recolector._guardar_csv()
+        if ruta_csv is None:
+            print("No se generó ningún archivo de medición.")
+            return
+
         nombre_archivo = self.__recolector.getNombreArchivo()
+        if nombre_archivo is None:
+            print("No se generó ningún archivo de medición.")
+            return
+
         self._procesar_csv(nombre_archivo)
 
     def _procesar_csv(self, nombre_archivo):
@@ -81,13 +99,15 @@ if __name__ == "__main__":
     from RecolectorDatos import RecolectorDatos
     from csv_manager import CSVManager
     from clasificador_vibraciones import ClasificadorVibraciones
-    from Biblioteca import Biblioteca
+    from biblioteca import Biblioteca
 
     recolector = RecolectorDatos(
-        ip="192.168.1.29",
+        ip="10.100.8.248",
         variables=["accX", "accY", "accZ", "acc_time"],
+        puerto=80,
+        direccionRelativa="datos_experimento"
     )
-    csv_manager = CSVManager("datos_experimentos")
+    csv_manager = CSVManager(recolector.getDireccionRelativa())
     clasificador = ClasificadorVibraciones(limiteMedio=1.5, limiteAlto=3.0)
     biblioteca = Biblioteca()
 

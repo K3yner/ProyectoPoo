@@ -245,21 +245,24 @@ class RecolectorDatos:
         """Guarda self.__datos en un CSV dentro de self.direccion_relativa."""
         if not self.getDatos():
             return None
- 
+
+        if self.getFechaHoraInicio() is None:
+            self.setFechaHoraInicio(datetime.now())
+
         if not os.path.exists(self.getDireccionRelativa()):
             os.makedirs(self.getDireccionRelativa())
- 
+
         fecha_str = self.getFechaHoraInicio().strftime("%Y-%m-%d")
         hora_str = self.getFechaHoraInicio().strftime("%H-%M-%S")
-        self.setNombreArchivo(f"Acelerómetro{fecha_str}{hora_str}.csv")
- 
+        self.setNombreArchivo(f"Acelerometro_{fecha_str}_{hora_str}.csv")
+
         ruta_completa = os.path.join(self.getDireccionRelativa(), self.getNombreArchivo())
- 
+
         with open(ruta_completa, mode="w", newline="", encoding="utf-8") as archivo_csv:
             escritor = csv.writer(archivo_csv)
             escritor.writerow(self.getVariables())
             escritor.writerows(self.getDatos())
- 
+
         return ruta_completa
 
         

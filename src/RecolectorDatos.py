@@ -171,8 +171,7 @@ class RecolectorDatos:
             respuesta = requests.get(url, timeout=5)
             respuesta.raise_for_status()
             return respuesta.json()
-        except requests.exceptions.RequestException as e:
-            print(f"Error al enviar comando '{comando}' a Phyphox: {e}") # este print está solo para pruebas, hay que quitarlo cuando se haga la versión final
+        except requests.exceptions.RequestException:
             return None
 
     def _obtener_datos(self):
@@ -183,8 +182,7 @@ class RecolectorDatos:
             respuesta = requests.get(url, timeout=5)
             respuesta.raise_for_status()
             return respuesta.json()
-        except requests.exceptions.RequestException as e:
-            print(f"Error al obtener datos de Phyphox: {e}") # este print está solo para pruebas, hay que quitarlo cuando se haga la versión final
+        except requests.exceptions.RequestException:
             return None
 
     # Control de mediciones
@@ -192,21 +190,18 @@ class RecolectorDatos:
         """Limpia buffers previos y arranca la medición en Phyphox."""
         self._enviar_comando("clear")
         resultado = self._enviar_comando("start")
-        print("DEBUG - respuesta de 'start':", resultado)   # <- temporal
         if resultado is not None:
             self.setMidiendo(True)
             self.setFechaHoraInicio(datetime.now())
-            print(f"Medición iniciada a las {self.getFechaHoraInicio().strftime('%Y-%m-%d %H:%M:%S')}")
         return resultado
 
     def _detener_medicion(self):
         """Detiene la medición en Phyphox."""
         resultado = self._enviar_comando("stop")
         self.setMidiendo(False)
-        print("Medición detenida.") # este print está solo para pruebas, hay que quitarlo cuando se haga la versión final
         return resultado
 
-    def _recolectar_datos(self, duracion_segundos):
+    def _recolectar_datos(self, duracion_segundos): #Este es el método que debe modificarse para poder recolectar la información por un intérvalos indefinidos de tiempo, y no solo por un tiempo determinado.
         if not self.getMidiendo():
             self._iniciar_medicion()
 
@@ -214,7 +209,6 @@ class RecolectorDatos:
 
         while time.time() < tiempo_final:
             datos_json = self._obtener_datos()
-            print("DEBUG - JSON recibido:", datos_json)   # <- temporal
             if datos_json is not None:
                 self._procesar_datos_json(datos_json)
             time.sleep(self.getIntervaloMuestreo())
@@ -250,7 +244,6 @@ class RecolectorDatos:
     def _guardar_csv(self):
         """Guarda self.__datos en un CSV dentro de self.direccion_relativa."""
         if not self.getDatos():
-            print("No hay datos para guardar.") #este print es solo de prueba, hay que quitarlo en la versión final
             return None
  
         if not os.path.exists(self.getDireccionRelativa()):
@@ -267,7 +260,6 @@ class RecolectorDatos:
             escritor.writerow(self.getVariables())
             escritor.writerows(self.getDatos())
  
-        print(f"Datos guardados en: {ruta_completa}") # print de prueba, hay que quitarlo en la versión final
         return ruta_completa
 
         

@@ -78,7 +78,7 @@ class Controlador:
 
 
 if __name__ == "__main__":
-    from recolector_datos import RecolectorDatos
+    from RecolectorDatos import RecolectorDatos
     from csv_manager import CSVManager
     from clasificador_vibraciones import ClasificadorVibraciones
     from Biblioteca import Biblioteca

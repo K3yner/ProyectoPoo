@@ -32,3 +32,4 @@ class Biblioteca:
         return {nivel: len(lista) for nivel, lista in self.__registros.items()}
  
 
+

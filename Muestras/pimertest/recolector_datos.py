@@ -294,13 +294,3 @@ class RecolectorDatos:
         return ruta_completa
 
 
-if __name__ == "__main__":
-    recolector = RecolectorDatos(
-        ip="192.168.1.29",
-        variables=["accX", "accY", "accZ", "acc_time"],
-        puerto=8080,
-        direccionRelativa="datos_experimentos",
-    )
-    recolector.iniciar()
-    time.sleep(5)
-    recolector.detener()

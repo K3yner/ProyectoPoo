@@ -14,7 +14,7 @@ import csv
 class CSVManager:
     
 
-    def __init__(self, direccion_relativa="datos_experimentos"):
+    def __init__(self, direccion_relativa="datos_experimento"):
         
         self.__direccion_relativa = direccion_relativa
         if not os.path.exists(self.__direccion_relativa):
@@ -49,6 +49,9 @@ class CSVManager:
     def leer(self, nombre_archivo):
         
         ruta_completa = os.path.join(self.__direccion_relativa, nombre_archivo)
+        if not os.path.exists(ruta_completa):
+            return [], []
+
         with open(ruta_completa, mode="r", newline="", encoding="utf-8") as archivo_csv:
             lector = csv.reader(archivo_csv)
             encabezados = next(lector)

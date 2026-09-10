@@ -81,11 +81,12 @@ if __name__ == "__main__":
     from recolector_datos import RecolectorDatos
     from csv_manager import CSVManager
     from clasificador_vibraciones import ClasificadorVibraciones
-    from biblioteca import Biblioteca
+    from Biblioteca import Biblioteca
 
     recolector = RecolectorDatos(
-        ip="192.168.1.29",
+        ip="192.168.1.25",
         variables=["accX", "accY", "accZ", "acc_time"],
+        puerto = 80
     )
     csv_manager = CSVManager("datos_experimentos")
     clasificador = ClasificadorVibraciones(limiteMedio=1.5, limiteAlto=3.0)

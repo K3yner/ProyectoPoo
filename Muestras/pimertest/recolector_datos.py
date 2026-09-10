@@ -296,9 +296,9 @@ class RecolectorDatos:
 
 if __name__ == "__main__":
     recolector = RecolectorDatos(
-        ip="192.168.1.29",
+        ip="10.100.1.95",
         variables=["accX", "accY", "accZ", "acc_time"],
-        puerto=8080,
+        puerto=80,
         direccionRelativa="datos_experimentos",
     )
     recolector.iniciar()

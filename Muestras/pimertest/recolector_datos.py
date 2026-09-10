@@ -293,14 +293,3 @@ class RecolectorDatos:
         print(f"Datos guardados en: {ruta_completa}")
         return ruta_completa
 
-
-if __name__ == "__main__":
-    recolector = RecolectorDatos(
-        ip="10.100.1.95",
-        variables=["accX", "accY", "accZ", "acc_time"],
-        puerto=80,
-        direccionRelativa="datos_experimentos",
-    )
-    recolector.iniciar()
-    time.sleep(5)
-    recolector.detener()

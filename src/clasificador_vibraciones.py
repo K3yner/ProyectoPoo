@@ -1,3 +1,7 @@
+import numpy as np
+import pandas as pd
+
+
 class ClasificadorVibraciones:
     """
     Clase encargada de clasificar la magnitud de vibraciones en nivel baja, media y alta, y de ofrecer recomendaciones

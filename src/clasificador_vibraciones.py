@@ -52,6 +52,29 @@ class ClasificadorVibraciones:
             "Recomendacion":reco
         }
 
+    def clasificarDataFrame(self, df):
+        if "magnitud" not in df.columns:
+            raise KeyError("El DataFrame debe contener la columna de magnitud para poder clasificarse.")
+
+        condiciones = [
+            df["magnitud"] < self.get_limiteMedio(),
+            (df["magnitud"] >= self.get_limiteMedio()) & (df["magnitud"] < self.get_limiteAlto()),
+            df["magnitud"] >= self.get_limiteAlto()
+        ]
+
+        opcionesNivel = ["bajo", "media", "alta"]
+
+        opciones_rec = [
+            "El nivel de la vibración es segura, se encuentra dentro del rango normal.",
+            "El nivel de la vibración es moderada. Se recomienda observar la aparición de grietas.",
+            "El nivel de vibración es alto. Riesgo potencial para la estructura."
+        ]
+
+        df["nivel"] = np.select(condiciones, opcionesNivel, default="desconocido")
+        df["recomendacion"] = np.select(condiciones, opciones_rec, default="sin recomendación.")
+        return df
+
+
 #Prueba
 if __name__=="__main__":
     clasificador = ClasificadorVibraciones(limiteMedio=1.5, limiteAlto=3.0)

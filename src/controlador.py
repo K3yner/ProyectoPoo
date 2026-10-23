@@ -166,7 +166,7 @@ if __name__ == "__main__":
     from biblioteca import Biblioteca
  
     recolector = RecolectorDatos(
-        ip="10.251.20.119",
+        ip="10.100.1.155",
         variables=["accX", "accY", "accZ", "acc_time"],
         puerto=80,
         direccionRelativa="datos_experimento",

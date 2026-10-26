@@ -171,6 +171,84 @@ class GraficoMagnitudes(tk.Canvas):
             self.create_oval(px(0) - 3, py(datos[0]) - 3,
                              px(0) + 3, py(datos[0]) + 3, fill=t.acento, outline="")
 
+class TablaRegistros(tk.Frame):
+    """Tabla de registros clasificados con filtro por nivel."""
+
+    FILTROS = ("todos", "alta", "media", "baja")
+
+    def __init__(self, master, tema, al_filtrar, al_elegir_archivo=None):
+        super().__init__(master, bg=tema.fondo)
+        self.__tema = tema
+
+        barra = tk.Frame(self, bg=tema.fondo)
+        barra.pack(fill="x", pady=(0, 6))
+        tk.Label(barra, text="Registros", bg=tema.fondo, fg=tema.texto,
+                 font=(tema.fuente, 12, "bold")).pack(side="left")
+        # Se empaqueta de derecha a izquierda: nivel, y a su izquierda el archivo.
+        self.__filtro = ttk.Combobox(barra, values=self.FILTROS, state="readonly",
+                                     width=8, style="Tema.TCombobox")
+        self.__filtro.set("todos")
+        self.__filtro.pack(side="right")
+        self.__filtro.bind("<<ComboboxSelected>>", lambda _e: al_filtrar())
+        tk.Label(barra, text="Nivel:", bg=tema.fondo,
+                 fg=tema.texto_suave, font=(tema.fuente, 10)).pack(side="right", padx=(10, 4))
+
+        self.__filtro_archivo = ttk.Combobox(barra, values=(), state="readonly",
+                                             width=30, style="Tema.TCombobox")
+        self.__filtro_archivo.pack(side="right")
+        if al_elegir_archivo is not None:
+            self.__filtro_archivo.bind("<<ComboboxSelected>>",
+                                       lambda _e: al_elegir_archivo())
+        tk.Label(barra, text="Archivo:", bg=tema.fondo,
+                 fg=tema.texto_suave, font=(tema.fuente, 10)).pack(side="right", padx=(10, 4))
+
+        contenedor = tk.Frame(self, bg=tema.fondo)
+        contenedor.pack(fill="both", expand=True)
+        contenedor.rowconfigure(0, weight=1)
+        contenedor.columnconfigure(0, weight=1)
+
+        columnas = ("timestamp", "magnitud", "nivel", "recomendacion")
+        self.__arbol = ttk.Treeview(contenedor, columns=columnas, show="headings",
+                                    style="Tema.Treeview")
+        for col, texto, ancho, minimo in (("timestamp", "Timestamp", 80, 60),
+                                          ("magnitud", "Magnitud", 80, 60),
+                                          ("nivel", "Nivel", 60, 50),
+                                          ("recomendacion", "Recomendación", 520, 300)):
+            self.__arbol.heading(col, text=texto)
+            self.__arbol.column(col, width=ancho, minwidth=minimo, anchor="w",
+                                stretch=(col == "recomendacion"))
+
+        for nivel in ("alta", "media", "baja"):
+            self.__arbol.tag_configure(nivel, foreground=tema.color_nivel(nivel))
+
+        scroll_v = ttk.Scrollbar(contenedor, orient="vertical",
+                                 command=self.__arbol.yview, style="Tema.Vertical.TScrollbar")
+        scroll_h = ttk.Scrollbar(contenedor, orient="horizontal",
+                                 command=self.__arbol.xview, style="Tema.Horizontal.TScrollbar")
+        self.__arbol.configure(yscrollcommand=scroll_v.set, xscrollcommand=scroll_h.set)
+        self.__arbol.grid(row=0, column=0, sticky="nsew")
+        scroll_v.grid(row=0, column=1, sticky="ns")
+        scroll_h.grid(row=1, column=0, sticky="ew")
+
+    def get_filtro(self):
+        return self.__filtro.get()
+
+    def get_archivo(self):
+        return self.__filtro_archivo.get()
+
+    def set_archivos(self, nombres):
+        self.__filtro_archivo["values"] = list(nombres)
+
+    def set_archivo(self, nombre):
+        self.__filtro_archivo.set(nombre)
+
+    def mostrar(self, registros):
+        self.__arbol.delete(*self.__arbol.get_children())
+        for r in registros:
+            self.__arbol.insert("", "end", tags=(r.nivel,), values=(
+                f"{r.timestamp:.3f}", f"{r.magnitud:.4f}",
+                r.nivel, r.recomendacion.strip()))
+
 class PanelLog(tk.Frame):
     """Cuadro de texto de solo lectura para mensajes del sistema."""
 

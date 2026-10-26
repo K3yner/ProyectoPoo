@@ -267,3 +267,219 @@ class PanelLog(tk.Frame):
         self.__texto.insert("end", mensaje.rstrip() + "\n")
         self.__texto.see("end")
         self.__texto.config(state="disabled")
+
+
+# ----------------------------------------------------------------------
+# Ventana principal
+# ----------------------------------------------------------------------
+class InterfazVibraciones(tk.Tk):
+    """
+    Ventana principal.
+
+    Args:
+        controlador: instancia de Controlador.
+        recolector: instancia de RecolectorDatos (para IP/puerto y estado).
+        biblioteca: instancia de Biblioteca (para mostrar los registros).
+        clasificador: instancia de ClasificadorVibraciones (umbrales y recomendaciones).
+        tema: instancia de Tema (opcional).
+        csv_manager: instancia de CSVManager (para listar y cargar los CSV de la carpeta).
+    """
+
+    def __init__(self, controlador, recolector, biblioteca, clasificador, tema=None,
+                 csv_manager=None):
+        super().__init__()
+        self.__controlador = controlador
+        self.__recolector = recolector
+        self.__biblioteca = biblioteca
+        self.__clasificador = clasificador
+        self.__csv_manager = csv_manager
+        self.tema = tema or Tema()
+        self.__ocupado = False
+
+        self.title("Monitor de vibraciones")
+        self.geometry("1360x880")
+        self.minsize(1100, 720)
+        self.configure(bg=self.tema.fondo)
+
+        self._configurar_estilos()
+        self._construir_encabezado()
+        self._construir_conexion()
+        self._construir_archivos()
+        self._construir_tarjetas()
+        self._construir_recomendacion()
+        self._construir_panel_central()
+        self._construir_log()
+
+        self._refrescar_estado()
+        self._refrescar_datos()
+
+        # Al abrir, carga automáticamente el CSV más reciente de la carpeta
+        self._actualizar_lista_archivos()
+        if self.__combo_archivos.get():
+            self._on_cargar_csv()
+
+    # ------------------------------------------------------------------
+    # Construcción de la interfaz
+    # ------------------------------------------------------------------
+    def _configurar_estilos(self):
+        t = self.tema
+        estilo = ttk.Style(self)
+        estilo.theme_use("clam")
+
+        for nombre, color in (("Iniciar", t.boton_iniciar),
+                              ("Detener", t.boton_detener),
+                              ("Neutro", t.boton_neutro)):
+            estilo.configure(f"{nombre}.TButton", background=color, foreground=t.boton_texto,
+                             font=(t.fuente, 11, "bold"), padding=(18, 10),
+                             borderwidth=0, focusthickness=0)
+            estilo.map(f"{nombre}.TButton",
+                       background=[("disabled", t.boton_desactivado), ("active", color)],
+                       foreground=[("disabled", t.texto_suave)])
+
+        estilo.configure("Tema.Treeview", background=t.superficie, fieldbackground=t.superficie,
+                         foreground=t.texto, rowheight=24, borderwidth=0,
+                         font=(t.fuente, 10))
+        estilo.configure("Tema.Treeview.Heading", background=t.superficie_alt,
+                         foreground=t.texto, font=(t.fuente, 10, "bold"), borderwidth=0)
+        estilo.map("Tema.Treeview", background=[("selected", t.acento)],
+                   foreground=[("selected", t.fondo)])
+        estilo.map("Tema.Treeview.Heading", background=[("active", t.borde)])
+
+        estilo.configure("Tema.TCombobox", fieldbackground=t.superficie_alt,
+                         background=t.superficie_alt, foreground=t.texto,
+                         arrowcolor=t.texto, bordercolor=t.borde)
+        estilo.configure("Tema.Vertical.TScrollbar", background=t.superficie_alt,
+                         troughcolor=t.superficie, arrowcolor=t.texto, bordercolor=t.borde)
+        estilo.configure("Tema.Horizontal.TScrollbar", background=t.superficie_alt,
+                         troughcolor=t.superficie, arrowcolor=t.texto, bordercolor=t.borde)
+
+    def _construir_encabezado(self):
+        t = self.tema
+        marco = tk.Frame(self, bg=t.fondo)
+        marco.pack(fill="x", padx=20, pady=(16, 6))
+
+        tk.Label(marco, text="Monitor de vibraciones", bg=t.fondo, fg=t.texto,
+                 font=(t.fuente, 20, "bold")).pack(side="left")
+
+        estado = tk.Frame(marco, bg=t.fondo)
+        estado.pack(side="right")
+        self.__punto = tk.Canvas(estado, width=16, height=16, bg=t.fondo,
+                                 highlightthickness=0)
+        self.__punto.pack(side="left")
+        self.__luz = self.__punto.create_oval(2, 2, 14, 14, fill=t.estado_inactivo, outline="")
+        self.__lbl_estado = tk.Label(estado, text="Detenido", bg=t.fondo, fg=t.texto_suave,
+                                     font=(t.fuente, 11, "bold"))
+        self.__lbl_estado.pack(side="left", padx=6)
+
+    def _construir_conexion(self):
+        t = self.tema
+        marco = tk.Frame(self, bg=t.superficie, highlightbackground=t.borde,
+                         highlightthickness=1)
+        marco.pack(fill="x", padx=20, pady=6)
+        interno = tk.Frame(marco, bg=t.superficie)
+        interno.pack(fill="x", padx=14, pady=12)
+
+        def campo(texto, valor, ancho):
+            tk.Label(interno, text=texto, bg=t.superficie, fg=t.texto_suave,
+                     font=(t.fuente, 10)).pack(side="left", padx=(0, 4))
+            entrada = tk.Entry(interno, width=ancho, bg=t.superficie_alt, fg=t.texto,
+                               insertbackground=t.texto, relief="flat",
+                               font=(t.fuente_mono, 10),
+                               highlightbackground=t.borde, highlightthickness=1)
+            entrada.insert(0, str(valor))
+            entrada.pack(side="left", padx=(0, 14), ipady=3)
+            return entrada
+
+        self.__entrada_ip = campo("IP:", self.__recolector.getIP(), 16)
+        self.__entrada_puerto = campo("Puerto:", self.__recolector.getPuerto(), 6)
+
+        self.__btn_detener = ttk.Button(interno, text="■  Detener y guardar",
+                                        style="Detener.TButton", command=self._on_detener)
+        self.__btn_detener.pack(side="right")
+        self.__btn_iniciar = ttk.Button(interno, text="▶  Iniciar medición",
+                                        style="Iniciar.TButton", command=self._on_iniciar)
+        self.__btn_iniciar.pack(side="right", padx=8)
+
+    def _construir_archivos(self):
+        t = self.tema
+        marco = tk.Frame(self, bg=t.superficie, highlightbackground=t.borde,
+                         highlightthickness=1)
+        marco.pack(fill="x", padx=20, pady=6)
+        interno = tk.Frame(marco, bg=t.superficie)
+        interno.pack(fill="x", padx=14, pady=10)
+
+        tk.Label(interno, text="Archivo CSV:", bg=t.superficie, fg=t.texto_suave,
+                 font=(t.fuente, 10)).pack(side="left", padx=(0, 6))
+        self.__combo_archivos = ttk.Combobox(interno, state="readonly", width=44,
+                                             style="Tema.TCombobox")
+        self.__combo_archivos.pack(side="left", padx=(0, 10))
+        self.__combo_archivos.bind("<<ComboboxSelected>>", lambda _e: self._sincronizar_combo_tabla())
+        ttk.Button(interno, text="Cargar", style="Neutro.TButton",
+                   command=self._on_cargar_csv).pack(side="left")
+        ttk.Button(interno, text="↻  Actualizar lista", style="Neutro.TButton",
+                   command=self._actualizar_lista_archivos).pack(side="left", padx=8)
+        self.__lbl_archivo = tk.Label(interno, text="Ningún archivo cargado",
+                                      bg=t.superficie, fg=t.texto_suave,
+                                      font=(t.fuente, 10), anchor="e")
+        self.__lbl_archivo.pack(side="right")
+
+    def _construir_tarjetas(self):
+        t = self.tema
+        marco = tk.Frame(self, bg=t.fondo)
+        marco.pack(fill="x", padx=20, pady=6)
+        self.__tarjetas = {}
+        for i, nivel in enumerate(("baja", "media", "alta")):
+            tarjeta = TarjetaNivel(marco, t, nivel)
+            tarjeta.grid(row=0, column=i, sticky="nsew", padx=(0 if i == 0 else 8, 0))
+            marco.columnconfigure(i, weight=1, uniform="tarjetas")
+            self.__tarjetas[nivel] = tarjeta
+
+    def _construir_recomendacion(self):
+        t = self.tema
+        self.__marco_reco = tk.Frame(self, bg=t.superficie, highlightbackground=t.borde,
+                                     highlightthickness=1)
+        self.__marco_reco.pack(fill="x", padx=20, pady=6)
+        self.__barra_reco = tk.Frame(self.__marco_reco, bg=t.texto_suave, width=6)
+        self.__barra_reco.pack(side="left", fill="y")
+        interno = tk.Frame(self.__marco_reco, bg=t.superficie)
+        interno.pack(side="left", fill="x", expand=True, padx=12, pady=10)
+        self.__lbl_pico = tk.Label(interno, text="Pico máximo: —", bg=t.superficie,
+                                   fg=t.texto, font=(t.fuente, 11, "bold"), anchor="w")
+        self.__lbl_pico.pack(fill="x")
+        self.__lbl_reco = tk.Label(interno, text="Aún no hay mediciones.", bg=t.superficie,
+                                   fg=t.texto_suave, font=(t.fuente, 10), anchor="w",
+                                   justify="left", wraplength=880)
+        self.__lbl_reco.pack(fill="x")
+
+    def _construir_panel_central(self):
+        """Gráfica a la izquierda y tabla de registros/recomendaciones a la derecha."""
+        t = self.tema
+        centro = tk.Frame(self, bg=t.fondo)
+        centro.pack(fill="both", expand=True, padx=20, pady=(6, 0))
+        centro.rowconfigure(0, weight=1)
+        centro.columnconfigure(0, weight=1, uniform="centro")
+        centro.columnconfigure(1, weight=1, uniform="centro")
+
+        izquierda = tk.Frame(centro, bg=t.fondo)
+        izquierda.grid(row=0, column=0, sticky="nsew", padx=(0, 8))
+        derecha = tk.Frame(centro, bg=t.fondo)
+        derecha.grid(row=0, column=1, sticky="nsew", padx=(8, 0))
+
+        self._construir_grafico(izquierda)
+        self._construir_tabla(derecha)
+
+    def _construir_grafico(self, padre):
+        t = self.tema
+        tk.Label(padre, text="Magnitud en el tiempo", bg=t.fondo, fg=t.texto,
+                 font=(t.fuente, 12, "bold")).pack(anchor="w", pady=(0, 6))
+        self.__grafico = GraficoMagnitudes(padre, t)
+        self.__grafico.pack(fill="both", expand=True)
+
+    def _construir_tabla(self, padre):
+        self.__tabla = TablaRegistros(padre, self.tema, self._refrescar_tabla,
+                                      self._on_elegir_archivo_tabla)
+        self.__tabla.pack(fill="both", expand=True)
+
+    def _construir_log(self):
+        self.__log = PanelLog(self, self.tema)
+        self.__log.pack(fill="x", padx=20, pady=10)

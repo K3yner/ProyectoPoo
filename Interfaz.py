@@ -98,6 +98,78 @@ class TarjetaNivel(tk.Frame):
         pct = (cantidad / total * 100) if total else 0
         self.__porcentaje.config(text=f"{pct:.1f} %")
 
+class GraficoMagnitudes(tk.Canvas):
+    """Gráfico de línea de las magnitudes, con las líneas de los umbrales."""
+
+    MARGEN = 40
+    MAX_PUNTOS = 800
+
+    def __init__(self, master, tema):
+        super().__init__(master, bg=tema.superficie, highlightthickness=1,
+                         highlightbackground=tema.borde, height=300)
+        self.__tema = tema
+        self.__magnitudes = []
+        self.__limite_medio = 1.5
+        self.__limite_alto = 3.0
+        self.bind("<Configure>", lambda _e: self._dibujar())
+
+    def actualizar(self, magnitudes, limite_medio, limite_alto):
+        self.__magnitudes = list(magnitudes)
+        self.__limite_medio = limite_medio
+        self.__limite_alto = limite_alto
+        self._dibujar()
+
+    def _dibujar(self):
+        t = self.__tema
+        self.delete("all")
+        w, h, m = self.winfo_width(), self.winfo_height(), self.MARGEN
+        if w < 100 or h < 100:
+            return
+
+        datos = self.__magnitudes
+        if not datos:
+            self.create_text(w / 2, h / 2, text="Sin datos todavía",
+                             fill=t.texto_suave, font=(t.fuente, 12))
+            return
+
+        paso = max(1, math.ceil(len(datos) / self.MAX_PUNTOS))
+        datos = datos[::paso]
+        y_max = max(max(datos), self.__limite_alto) * 1.15
+
+        def px(i):
+            return m + (w - 2 * m) * (i / max(1, len(datos) - 1))
+
+        def py(valor):
+            return h - m + 10 - (h - 2 * m) * (valor / y_max)
+
+        # Ejes
+        self.create_line(m, m - 10, m, h - m + 10, fill=t.borde)
+        self.create_line(m, h - m + 10, w - m, h - m + 10, fill=t.borde)
+
+        # Umbrales
+        for valor, nivel, nombre in ((self.__limite_medio, "media", "media"),
+                                     (self.__limite_alto, "alta", "alta")):
+            y = py(valor)
+            color = t.color_nivel(nivel)
+            self.create_line(m, y, w - m, y, fill=color, dash=(4, 4))
+            self.create_text(w - m, y - 8, text=f"{nombre} ({valor})",
+                             fill=color, anchor="e", font=(t.fuente, 8))
+
+        # Etiquetas del eje Y
+        self.create_text(m - 6, py(0), text="0", fill=t.texto_suave,
+                         anchor="e", font=(t.fuente, 8))
+        self.create_text(m - 6, py(y_max / 1.15), text=f"{y_max / 1.15:.1f}",
+                         fill=t.texto_suave, anchor="e", font=(t.fuente, 8))
+
+        # Línea de magnitud
+        if len(datos) > 1:
+            puntos = []
+            for i, v in enumerate(datos):
+                puntos.extend((px(i), py(v)))
+            self.create_line(*puntos, fill=t.acento, width=2)
+        else:
+            self.create_oval(px(0) - 3, py(datos[0]) - 3,
+                             px(0) + 3, py(datos[0]) + 3, fill=t.acento, outline="")
 
 class PanelLog(tk.Frame):
     """Cuadro de texto de solo lectura para mensajes del sistema."""

@@ -610,7 +610,7 @@ class InterfazVibraciones(tk.Tk):
         else:
             # CSV crudo de phyphox: se clasifica completo (y se guarda su versión Clasificado_)
             self.__biblioteca.vaciar()
-            if self.__controlador.procesar_csv(nombre) is None:
+            if self.__controlador._procesar_csv(nombre) is None:
                 raise ValueError("el archivo no tiene el formato de una medición de phyphox.")
 
     def _al_cargar_csv(self, nombre, salida, error):

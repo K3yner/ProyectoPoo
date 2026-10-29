@@ -52,23 +52,18 @@ class Controlador:
     def _procesar_csv(self, nombre_archivo):
         """Lee un CSV de la carpeta y carga sus filas clasificadas en la Biblioteca.
 
-        Usa los encabezados del archivo para ubicar cada columna (el recolector
-        guarda accX, accY, accZ, acc_time, en ese orden)."""
-        encabezados, filas = self.__csv_manager.leer(nombre_archivo)
+        CSVManager.leer() devuelve un DataFrame con las columnas identificadas
+        por nombre (el recolector guarda accX, accY, accZ, acc_time)."""
+        df = self.__csv_manager.leer(nombre_archivo)
 
         requeridas = ("acc_time", "accX", "accY", "accZ")
-        faltantes = [col for col in requeridas if col not in encabezados]
+        faltantes = [col for col in requeridas if col not in df.columns]
         if faltantes:
             raise ValueError(f"faltan las columnas {faltantes}")
 
-        i_t = encabezados.index("acc_time")
-        i_x = encabezados.index("accX")
-        i_y = encabezados.index("accY")
-        i_z = encabezados.index("accZ")
-
-        for fila in filas:
-            muestra = Muestra(float(fila[i_t]), float(fila[i_x]),
-                              float(fila[i_y]), float(fila[i_z]))
+        for fila in df.itertuples(index=False):
+            muestra = Muestra(float(fila.acc_time), float(fila.accX),
+                              float(fila.accY), float(fila.accZ))
 
             resultado = self.__clasificador.muestraClasificacion(muestra)
 

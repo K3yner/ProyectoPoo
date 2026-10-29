@@ -72,8 +72,9 @@ class Tema:
         }.get(nivel, self.texto_suave)
 
 
+# ----------------------------------------------------------------------
 # Componentes reutilizables
-
+# ----------------------------------------------------------------------
 class TarjetaNivel(tk.Frame):
     """Tarjeta que muestra cuántos registros hay en un nivel."""
 
@@ -97,6 +98,7 @@ class TarjetaNivel(tk.Frame):
         self.__valor.config(text=str(cantidad))
         pct = (cantidad / total * 100) if total else 0
         self.__porcentaje.config(text=f"{pct:.1f} %")
+
 
 class GraficoMagnitudes(tk.Canvas):
     """Gráfico de línea de las magnitudes, con las líneas de los umbrales."""
@@ -170,6 +172,7 @@ class GraficoMagnitudes(tk.Canvas):
         else:
             self.create_oval(px(0) - 3, py(datos[0]) - 3,
                              px(0) + 3, py(datos[0]) + 3, fill=t.acento, outline="")
+
 
 class TablaRegistros(tk.Frame):
     """Tabla de registros clasificados con filtro por nivel."""
@@ -248,6 +251,7 @@ class TablaRegistros(tk.Frame):
             self.__arbol.insert("", "end", tags=(r.nivel,), values=(
                 f"{r.timestamp:.3f}", f"{r.magnitud:.4f}",
                 r.nivel, r.recomendacion.strip()))
+
 
 class PanelLog(tk.Frame):
     """Cuadro de texto de solo lectura para mensajes del sistema."""
@@ -483,3 +487,270 @@ class InterfazVibraciones(tk.Tk):
     def _construir_log(self):
         self.__log = PanelLog(self, self.tema)
         self.__log.pack(fill="x", padx=20, pady=10)
+
+    # ------------------------------------------------------------------
+    # Acciones de los botones
+    # ------------------------------------------------------------------
+    def _on_iniciar(self):
+        if self.__ocupado:
+            return
+        try:
+            puerto = int(self.__entrada_puerto.get())
+        except ValueError:
+            messagebox.showerror("Puerto inválido", "El puerto debe ser un número entero.")
+            return
+
+        self.__recolector.setIP(self.__entrada_ip.get().strip())
+        self.__recolector.setPuerto(puerto)
+
+        self.__log.escribir("Conectando con phyphox...")
+        self._ejecutar_en_hilo(self.__controlador.iniciar_medicion, self._al_iniciar)
+
+    def _al_iniciar(self, salida, error):
+        self._mostrar_salida(salida, error)
+        if error is None and self.__recolector.getMidiendo():
+            # Cada medición parte de cero: los timestamps de phyphox reinician en 0 y
+            # mezclarlos con los de otra medición dibujaría una gráfica sin sentido.
+            self.__biblioteca.vaciar()
+            self.__lbl_archivo.config(text="Medición en curso...")
+            self._refrescar_datos()
+            self.__log.escribir("Medición iniciada.")
+        elif error is None:
+            self.__log.escribir("No se pudo iniciar: revisa la IP/puerto y que el "
+                                "acceso remoto de phyphox esté activo.")
+            messagebox.showwarning("Sin conexión",
+                                   "No se pudo conectar con phyphox.\n"
+                                   "Verifica la IP, el puerto y el acceso remoto.")
+
+    def _on_detener(self):
+        if self.__ocupado:
+            return
+        self.__log.escribir("Deteniendo y procesando datos...")
+        self._ejecutar_en_hilo(self.__controlador.detener_medicion, self._al_detener)
+
+    def _al_detener(self, salida, error):
+        self._mostrar_salida(salida, error)
+        if error is None:
+            self.__log.escribir("Proceso terminado.")
+        self._refrescar_datos()
+
+        nombre = self.__recolector.getNombreArchivo()
+        if nombre:
+            nombre = nombre.replace("Acelerometro_", "Clasificado_", 1)
+        self._actualizar_lista_archivos(seleccionar=nombre)
+        if error is None and nombre and self.__biblioteca.obtener_todos():
+            self.__lbl_archivo.config(text=f"Mostrando: {nombre}")
+        else:
+            self.__lbl_archivo.config(text="Ningún archivo cargado")
+
+    # ------------------------------------------------------------------
+    # Carga de CSV desde la carpeta de datos
+    # ------------------------------------------------------------------
+    def _listar_csvs(self):
+        """Nombres de los CSV de la carpeta de datos, del más reciente al más antiguo."""
+        if self.__csv_manager is None:
+            return []
+        carpeta = self.__csv_manager.get_direccion_relativa()
+        try:
+            nombres = [n for n in os.listdir(carpeta) if n.lower().endswith(".csv")]
+            nombres.sort(key=lambda n: os.path.getmtime(os.path.join(carpeta, n)),
+                         reverse=True)
+        except OSError:
+            return []
+        return nombres
+
+    def _actualizar_lista_archivos(self, seleccionar=None):
+        nombres = self._listar_csvs()
+        self.__combo_archivos["values"] = nombres
+        actual = seleccionar or self.__combo_archivos.get()
+        if actual in nombres:
+            self.__combo_archivos.set(actual)
+        elif nombres:
+            clasificados = [n for n in nombres if n.startswith("Clasificado_")]
+            self.__combo_archivos.set((clasificados or nombres)[0])
+        else:
+            self.__combo_archivos.set("")
+        self.__tabla.set_archivos(nombres)
+        self._sincronizar_combo_tabla()
+
+    def _sincronizar_combo_tabla(self):
+        """Mantiene igual el archivo mostrado en ambos selectores."""
+        self.__tabla.set_archivo(self.__combo_archivos.get())
+
+    def _on_elegir_archivo_tabla(self):
+        """El selector de la tabla carga el archivo apenas se elige."""
+        if self.__ocupado:
+            self._sincronizar_combo_tabla()  # vuelve al archivo anterior
+            return
+        self.__combo_archivos.set(self.__tabla.get_archivo())
+        self._on_cargar_csv()
+
+    def _on_cargar_csv(self):
+        if self.__ocupado:
+            return
+        nombre = self.__combo_archivos.get()
+        if not nombre:
+            messagebox.showinfo("Sin archivo", "No hay ningún CSV seleccionado en la carpeta de datos.")
+            return
+        self.__log.escribir(f"Cargando {nombre}...")
+        self._ejecutar_en_hilo(lambda: self._cargar_csv(nombre),
+                               lambda salida, error: self._al_cargar_csv(nombre, salida, error))
+
+    def _cargar_csv(self, nombre):
+        """Se ejecuta en segundo plano: reemplaza el contenido de la Biblioteca por el CSV."""
+        if nombre.startswith("Clasificado_"):
+            df = self.__csv_manager.leer(nombre, solo_numericos=False)
+            columnas = ["timestamp", "magnitud", "nivel", "recomendacion"]
+            if set(columnas) - set(df.columns):
+                raise ValueError("el archivo clasificado no tiene las columnas esperadas.")
+            df = df.dropna(subset=columnas)
+            self.__biblioteca.vaciar()
+            cantidad = self.__biblioteca.agregar_dataframe(df)
+            print(f"Se cargaron {cantidad} muestras clasificadas.")
+        else:
+            # CSV crudo de phyphox: se clasifica completo (y se guarda su versión Clasificado_)
+            self.__biblioteca.vaciar()
+            if self.__controlador.procesar_csv(nombre) is None:
+                raise ValueError("el archivo no tiene el formato de una medición de phyphox.")
+
+    def _al_cargar_csv(self, nombre, salida, error):
+        self._mostrar_salida(salida, error)
+        if error is None:
+            self.__lbl_archivo.config(text=f"Mostrando: {nombre}")
+        else:
+            self.__lbl_archivo.config(text="Ningún archivo cargado")
+        self._actualizar_lista_archivos(seleccionar=nombre)
+        self._refrescar_datos()
+
+    # ------------------------------------------------------------------
+    # Ejecución en segundo plano (las llamadas de red no congelan la ventana)
+    # ------------------------------------------------------------------
+    def _ejecutar_en_hilo(self, funcion, al_terminar):
+        import threading
+
+        self.__ocupado = True
+        self._refrescar_estado()
+        resultado = queue.Queue()
+
+        def tarea():
+            salida = io.StringIO()
+            error = None
+            try:
+                with redirect_stdout(salida):
+                    funcion()
+            except Exception as e:  # noqa: BLE001
+                error = e
+            resultado.put((salida.getvalue(), error))
+
+        threading.Thread(target=tarea, daemon=True).start()
+
+        def revisar():
+            try:
+                salida, error = resultado.get_nowait()
+            except queue.Empty:
+                self.after(100, revisar)
+                return
+            self.__ocupado = False
+            al_terminar(salida, error)
+            self._refrescar_estado()
+
+        self.after(100, revisar)
+
+    def _mostrar_salida(self, salida, error):
+        """Pasa al panel de mensajes lo que el Controlador imprimió con print()."""
+        if salida.strip():
+            self.__log.escribir(salida)
+        if error is not None:
+            self.__log.escribir(f"Error: {error}")
+            messagebox.showerror("Error", str(error))
+
+    # ------------------------------------------------------------------
+    # Refresco de la vista
+    # ------------------------------------------------------------------
+    def _refrescar_estado(self):
+        t = self.tema
+        midiendo = self.__recolector.getMidiendo()
+
+        if self.__ocupado:
+            texto, color = "Procesando...", t.acento
+        elif midiendo:
+            texto, color = "Midiendo", t.estado_activo
+        else:
+            texto, color = "Detenido", t.estado_inactivo
+
+        self.__punto.itemconfig(self.__luz, fill=color)
+        self.__lbl_estado.config(text=texto, fg=color)
+
+        puede_iniciar = not midiendo and not self.__ocupado
+        puede_detener = midiendo and not self.__ocupado
+        self.__btn_iniciar.state(["!disabled"] if puede_iniciar else ["disabled"])
+        self.__btn_detener.state(["!disabled"] if puede_detener else ["disabled"])
+
+    def _registros_ordenados(self):
+        return sorted(self.__biblioteca.obtener_todos(), key=lambda r: r.timestamp)
+
+    def _refrescar_datos(self):
+        resumen = self.__controlador.obtener_resumen()
+        total = sum(resumen.values())
+        for nivel, tarjeta in self.__tarjetas.items():
+            tarjeta.actualizar(resumen.get(nivel, 0), total)
+
+        registros = self._registros_ordenados()
+        self.__grafico.actualizar([r.magnitud for r in registros],
+                                  self.__clasificador.get_limiteMedio(),
+                                  self.__clasificador.get_limiteAlto())
+        self._refrescar_tabla()
+        self._refrescar_recomendacion(registros)
+
+    def _refrescar_tabla(self):
+        registros = self._registros_ordenados()
+        filtro = self.__tabla.get_filtro()
+        if filtro != "todos":
+            registros = [r for r in registros if r.nivel == filtro]
+        self.__tabla.mostrar(registros)
+
+    def _refrescar_recomendacion(self, registros):
+        t = self.tema
+        if not registros:
+            self.__lbl_pico.config(text="Pico máximo: —")
+            self.__lbl_reco.config(text="Aún no hay mediciones.", fg=t.texto_suave)
+            self.__barra_reco.config(bg=t.texto_suave)
+            return
+
+        pico = max(registros, key=lambda r: r.magnitud)
+        self.__lbl_pico.config(text=f"Pico máximo: {pico.magnitud:.4f}  (nivel {pico.nivel})")
+        self.__lbl_reco.config(text=pico.recomendacion.strip(), fg=t.texto)
+        self.__barra_reco.config(bg=t.color_nivel(pico.nivel))
+
+
+# ----------------------------------------------------------------------
+# Punto de entrada
+# ----------------------------------------------------------------------
+def main():
+    from RecolectorDatos import RecolectorDatos
+    from csv_manager import CSVManager
+    from clasificador_vibraciones import ClasificadorVibraciones
+    from biblioteca import Biblioteca
+    from Controlador import Controlador
+
+    recolector = RecolectorDatos(
+        ip="10.100.8.248",
+        variables=["accX", "accY", "accZ", "acc_time"],
+        puerto=80,
+        direccionRelativa="datos_experimento",
+    )
+    csv_manager = CSVManager(recolector.getDireccionRelativa())
+    clasificador = ClasificadorVibraciones(limiteMedio=1.5, limiteAlto=3.0)
+    biblioteca = Biblioteca()
+    controlador = Controlador(recolector, csv_manager, clasificador, biblioteca)
+
+    # Para cambiar colores:  tema = Tema(); tema.fondo = "#FFFFFF"; ...
+    tema = Tema()
+
+    app = InterfazVibraciones(controlador, recolector, biblioteca, clasificador, tema,
+                              csv_manager=csv_manager)
+    app.mainloop()
+
+
+if __name__ == "__main__":
+    main()

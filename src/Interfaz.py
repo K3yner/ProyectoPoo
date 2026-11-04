@@ -18,11 +18,9 @@ import io
 import math
 import os
 import queue
-import shutil
 import tkinter as tk
 from contextlib import redirect_stdout
-from tkinter import filedialog, ttk, messagebox
-from tkinterdnd2 import DND_FILES, TkinterDnD
+from tkinter import ttk, messagebox
 
 
 # ----------------------------------------------------------------------
@@ -278,7 +276,7 @@ class PanelLog(tk.Frame):
 # ----------------------------------------------------------------------
 # Ventana principal
 # ----------------------------------------------------------------------
-class InterfazVibraciones(TkinterDnD.Tk):
+class InterfazVibraciones(tk.Tk):
     """
     Ventana principal.
 
@@ -321,7 +319,7 @@ class InterfazVibraciones(TkinterDnD.Tk):
 
         # Al abrir, carga automáticamente el CSV más reciente de la carpeta
         self._actualizar_lista_archivos()
-        if self.__tabla.get_archivo():
+        if self.__combo_archivos.get():
             self._on_cargar_csv()
 
     # ------------------------------------------------------------------
@@ -414,21 +412,16 @@ class InterfazVibraciones(TkinterDnD.Tk):
         interno = tk.Frame(marco, bg=t.superficie)
         interno.pack(fill="x", padx=14, pady=10)
 
-        self.__archivo_seleccionado = ""
-        ttk.Button(interno, text="Cargar CSV", style="Neutro.TButton",
-                   command=self._seleccionar_csv).pack(side="left")
+        tk.Label(interno, text="Archivo CSV:", bg=t.superficie, fg=t.texto_suave,
+                 font=(t.fuente, 10)).pack(side="left", padx=(0, 6))
+        self.__combo_archivos = ttk.Combobox(interno, state="readonly", width=44,
+                                             style="Tema.TCombobox")
+        self.__combo_archivos.pack(side="left", padx=(0, 10))
+        self.__combo_archivos.bind("<<ComboboxSelected>>", lambda _e: self._sincronizar_combo_tabla())
+        ttk.Button(interno, text="Cargar", style="Neutro.TButton",
+                   command=self._on_cargar_csv).pack(side="left")
         ttk.Button(interno, text="↻  Actualizar lista", style="Neutro.TButton",
                    command=self._actualizar_lista_archivos).pack(side="left", padx=8)
-        zona_suelta = tk.Frame(interno, bg=t.superficie_alt,
-                               highlightbackground=t.borde, highlightthickness=1)
-        zona_suelta.pack(side="left", fill="x", expand=True, padx=8, ipady=8)
-        etiqueta_suelta = tk.Label(
-            zona_suelta, text="o suelta aquí un archivo CSV",
-            bg=t.superficie_alt, fg=t.texto_suave, font=(t.fuente, 10))
-        etiqueta_suelta.pack(fill="x", padx=8)
-        for widget in (zona_suelta, etiqueta_suelta):
-            widget.drop_target_register(DND_FILES)
-            widget.dnd_bind("<<Drop>>", self._al_soltar_csv)
         self.__lbl_archivo = tk.Label(interno, text="Ningún archivo cargado",
                                       bg=t.superficie, fg=t.texto_suave,
                                       font=(t.fuente, 10), anchor="e")
@@ -553,77 +546,6 @@ class InterfazVibraciones(TkinterDnD.Tk):
     # ------------------------------------------------------------------
     # Carga de CSV desde la carpeta de datos
     # ------------------------------------------------------------------
-    def _seleccionar_csv(self):
-        if self.__ocupado:
-            return
-        ruta = filedialog.askopenfilename(
-            parent=self,
-            title="Seleccionar archivo CSV",
-            filetypes=(("Archivos CSV", "*.csv"), ("Todos los archivos", "*.*")),
-        )
-        if ruta:
-            self._importar_csv(ruta)
-
-    def _al_soltar_csv(self, evento):
-        rutas = self.tk.splitlist(evento.data)
-        if len(rutas) != 1:
-            messagebox.showwarning(
-                "Selecciona un archivo",
-                "Suelta un solo archivo CSV a la vez.",
-                parent=self,
-            )
-            return "break"
-        self._importar_csv(rutas[0])
-        return "break"
-
-    def _importar_csv(self, ruta_origen):
-        if self.__ocupado:
-            return
-        if not ruta_origen.lower().endswith(".csv"):
-            messagebox.showerror("Formato no válido", "Selecciona un archivo con extensión .csv.",
-                                 parent=self)
-            return
-        if self.__csv_manager is None:
-            messagebox.showerror("Error", "No está configurada la carpeta de datos.",
-                                 parent=self)
-            return
-        if not os.path.isfile(ruta_origen):
-            messagebox.showerror("Archivo no encontrado", "No se pudo encontrar el archivo CSV.",
-                                 parent=self)
-            return
-
-        carpeta = self.__csv_manager.get_direccion_relativa()
-        try:
-            os.makedirs(carpeta, exist_ok=True)
-            nombre = os.path.basename(ruta_origen)
-            destino = os.path.join(carpeta, nombre)
-            misma_ruta = (
-                os.path.normcase(os.path.abspath(ruta_origen))
-                == os.path.normcase(os.path.abspath(destino))
-            )
-            if not misma_ruta:
-                base, extension = os.path.splitext(nombre)
-                numero = 1
-                while os.path.exists(destino):
-                    nombre = f"{base}_{numero}{extension}"
-                    destino = os.path.join(carpeta, nombre)
-                    numero += 1
-        except OSError as error:
-            messagebox.showerror("Error al guardar el archivo", str(error), parent=self)
-            return
-
-        self.__log.escribir(f"Importando {os.path.basename(ruta_origen)}...")
-
-        def guardar_y_cargar():
-            if not misma_ruta:
-                shutil.copy2(ruta_origen, destino)
-            self._cargar_csv(nombre)
-
-        self._ejecutar_en_hilo(
-            guardar_y_cargar,
-            lambda salida, error: self._al_cargar_csv(nombre, salida, error),
-        )
-
     def _listar_csvs(self):
         """Nombres de los CSV de la carpeta de datos, del más reciente al más antiguo."""
         if self.__csv_manager is None:
@@ -639,29 +561,34 @@ class InterfazVibraciones(TkinterDnD.Tk):
 
     def _actualizar_lista_archivos(self, seleccionar=None):
         nombres = self._listar_csvs()
-        self.__tabla.set_archivos(nombres)
-        actual = seleccionar or self.__archivo_seleccionado
+        self.__combo_archivos["values"] = nombres
+        actual = seleccionar or self.__combo_archivos.get()
         if actual in nombres:
-            self.__tabla.set_archivo(actual)
+            self.__combo_archivos.set(actual)
         elif nombres:
             clasificados = [n for n in nombres if n.startswith("Clasificado_")]
-            self.__tabla.set_archivo((clasificados or nombres)[0])
+            self.__combo_archivos.set((clasificados or nombres)[0])
         else:
-            self.__tabla.set_archivo("")
-        self.__archivo_seleccionado = self.__tabla.get_archivo()
+            self.__combo_archivos.set("")
+        self.__tabla.set_archivos(nombres)
+        self._sincronizar_combo_tabla()
+
+    def _sincronizar_combo_tabla(self):
+        """Mantiene igual el archivo mostrado en ambos selectores."""
+        self.__tabla.set_archivo(self.__combo_archivos.get())
 
     def _on_elegir_archivo_tabla(self):
         """El selector de la tabla carga el archivo apenas se elige."""
         if self.__ocupado:
-            self.__tabla.set_archivo(self.__archivo_seleccionado)
+            self._sincronizar_combo_tabla()  # vuelve al archivo anterior
             return
-        self.__archivo_seleccionado = self.__tabla.get_archivo()
+        self.__combo_archivos.set(self.__tabla.get_archivo())
         self._on_cargar_csv()
 
     def _on_cargar_csv(self):
         if self.__ocupado:
             return
-        nombre = self.__tabla.get_archivo()
+        nombre = self.__combo_archivos.get()
         if not nombre:
             messagebox.showinfo("Sin archivo", "No hay ningún CSV seleccionado en la carpeta de datos.")
             return
@@ -671,37 +598,20 @@ class InterfazVibraciones(TkinterDnD.Tk):
 
     def _cargar_csv(self, nombre):
         """Se ejecuta en segundo plano: reemplaza el contenido de la Biblioteca por el CSV."""
-        df = self.__csv_manager.leer(nombre, solo_numericos=False)
-        columnas_clasificadas = {"timestamp", "magnitud", "nivel", "recomendacion"}
-        columnas_crudas = {"acc_time", "accX", "accY", "accZ"}
-        if columnas_clasificadas.issubset(df.columns):
-            import pandas as pd
-
-            df["timestamp"] = pd.to_numeric(df["timestamp"], errors="coerce")
-            df["magnitud"] = pd.to_numeric(df["magnitud"], errors="coerce")
-            df = df.dropna(subset=list(columnas_clasificadas))
-            if df.empty:
-                raise ValueError("el CSV clasificado no contiene registros válidos.")
-            if not set(df["nivel"]).issubset({"alta", "media", "baja"}):
-                raise ValueError("el CSV clasificado contiene niveles desconocidos.")
+        if nombre.startswith("Clasificado_"):
+            df = self.__csv_manager.leer(nombre, solo_numericos=False)
+            columnas = ["timestamp", "magnitud", "nivel", "recomendacion"]
+            if set(columnas) - set(df.columns):
+                raise ValueError("el archivo clasificado no tiene las columnas esperadas.")
+            df = df.dropna(subset=columnas)
             self.__biblioteca.vaciar()
             cantidad = self.__biblioteca.agregar_dataframe(df)
             print(f"Se cargaron {cantidad} muestras clasificadas.")
-        elif columnas_crudas.issubset(df.columns):
-            # CSV crudo de phyphox: se clasifica completo (y se guarda su versión Clasificado_)
-            df = self.__csv_manager.leer(nombre)
-            if not columnas_crudas.issubset(df.columns) or df.empty:
-                raise ValueError("el CSV no contiene muestras válidas de phyphox.")
-            self.__biblioteca.vaciar()
-            self.__controlador._procesar_csv(nombre)
-            if not self.__biblioteca.obtener_todos():
-                raise ValueError("el CSV no contiene muestras válidas de phyphox.")
         else:
-            raise ValueError(
-                "El CSV debe tener las columnas de phyphox "
-                "(acc_time, accX, accY, accZ) o las columnas clasificadas "
-                "(timestamp, magnitud, nivel, recomendacion)."
-            )
+            # CSV crudo de phyphox: se clasifica completo (y se guarda su versión Clasificado_)
+            self.__biblioteca.vaciar()
+            if self.__controlador._procesar_csv(nombre) is None:
+                raise ValueError("el archivo no tiene el formato de una medición de phyphox.")
 
     def _al_cargar_csv(self, nombre, salida, error):
         self._mostrar_salida(salida, error)

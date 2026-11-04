@@ -319,7 +319,7 @@ class InterfazVibraciones(tk.Tk):
 
         # Al abrir, carga automáticamente el CSV más reciente de la carpeta
         self._actualizar_lista_archivos()
-        if self.__combo_archivos.get():
+        if self.__tabla.get_archivo():
             self._on_cargar_csv()
 
     # ------------------------------------------------------------------
@@ -412,12 +412,7 @@ class InterfazVibraciones(tk.Tk):
         interno = tk.Frame(marco, bg=t.superficie)
         interno.pack(fill="x", padx=14, pady=10)
 
-        tk.Label(interno, text="Archivo CSV:", bg=t.superficie, fg=t.texto_suave,
-                 font=(t.fuente, 10)).pack(side="left", padx=(0, 6))
-        self.__combo_archivos = ttk.Combobox(interno, state="readonly", width=44,
-                                             style="Tema.TCombobox")
-        self.__combo_archivos.pack(side="left", padx=(0, 10))
-        self.__combo_archivos.bind("<<ComboboxSelected>>", lambda _e: self._sincronizar_combo_tabla())
+        self.__archivo_seleccionado = ""
         ttk.Button(interno, text="Cargar", style="Neutro.TButton",
                    command=self._on_cargar_csv).pack(side="left")
         ttk.Button(interno, text="↻  Actualizar lista", style="Neutro.TButton",
@@ -561,34 +556,29 @@ class InterfazVibraciones(tk.Tk):
 
     def _actualizar_lista_archivos(self, seleccionar=None):
         nombres = self._listar_csvs()
-        self.__combo_archivos["values"] = nombres
-        actual = seleccionar or self.__combo_archivos.get()
+        self.__tabla.set_archivos(nombres)
+        actual = seleccionar or self.__archivo_seleccionado
         if actual in nombres:
-            self.__combo_archivos.set(actual)
+            self.__tabla.set_archivo(actual)
         elif nombres:
             clasificados = [n for n in nombres if n.startswith("Clasificado_")]
-            self.__combo_archivos.set((clasificados or nombres)[0])
+            self.__tabla.set_archivo((clasificados or nombres)[0])
         else:
-            self.__combo_archivos.set("")
-        self.__tabla.set_archivos(nombres)
-        self._sincronizar_combo_tabla()
-
-    def _sincronizar_combo_tabla(self):
-        """Mantiene igual el archivo mostrado en ambos selectores."""
-        self.__tabla.set_archivo(self.__combo_archivos.get())
+            self.__tabla.set_archivo("")
+        self.__archivo_seleccionado = self.__tabla.get_archivo()
 
     def _on_elegir_archivo_tabla(self):
         """El selector de la tabla carga el archivo apenas se elige."""
         if self.__ocupado:
-            self._sincronizar_combo_tabla()  # vuelve al archivo anterior
+            self.__tabla.set_archivo(self.__archivo_seleccionado)
             return
-        self.__combo_archivos.set(self.__tabla.get_archivo())
+        self.__archivo_seleccionado = self.__tabla.get_archivo()
         self._on_cargar_csv()
 
     def _on_cargar_csv(self):
         if self.__ocupado:
             return
-        nombre = self.__combo_archivos.get()
+        nombre = self.__tabla.get_archivo()
         if not nombre:
             messagebox.showinfo("Sin archivo", "No hay ningún CSV seleccionado en la carpeta de datos.")
             return

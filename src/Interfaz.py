@@ -22,7 +22,9 @@ import queue
 import threading
 import tkinter as tk
 from contextlib import redirect_stdout
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
+
+from tkinterdnd2 import DND_FILES, TkinterDnD
 
 
 # ----------------------------------------------------------------------
@@ -284,7 +286,7 @@ class PanelLog(tk.Frame):
 # ----------------------------------------------------------------------
 # Ventana principal
 # ----------------------------------------------------------------------
-class InterfazVibraciones(tk.Tk):
+class InterfazVibraciones(TkinterDnD.Tk):
     """
     Ventana principal.
 
@@ -307,6 +309,7 @@ class InterfazVibraciones(tk.Tk):
         self.__csv_manager = csv_manager
         self.tema = tema or Tema()
         self.__ocupado = False
+        self.__archivo_seleccionado = ""
         self.__id_en_vivo = None  # actualización en vivo programada con after()
 
         self.title("Monitor de vibraciones")
@@ -326,10 +329,8 @@ class InterfazVibraciones(tk.Tk):
         self._refrescar_estado()
         self._refrescar_datos()
 
-        # Al abrir, carga automáticamente el CSV más reciente de la carpeta
+        # Al abrir, solo muestra los CSV disponibles; cargar requiere pulsar el botón.
         self._actualizar_lista_archivos()
-        if self.__combo_archivos.get():
-            self._on_cargar_csv()
 
         # Al abrir, pide la IP que muestra phyphox en el teléfono
         self.after(300, self._pedir_ip)
@@ -507,16 +508,24 @@ class InterfazVibraciones(tk.Tk):
         interno = tk.Frame(marco, bg=t.superficie)
         interno.pack(fill="x", padx=14, pady=10)
 
-        tk.Label(interno, text="Archivo CSV:", bg=t.superficie, fg=t.texto_suave,
-                 font=(t.fuente, 10)).pack(side="left", padx=(0, 6))
-        self.__combo_archivos = ttk.Combobox(interno, state="readonly", width=44,
-                                             style="Tema.TCombobox")
-        self.__combo_archivos.pack(side="left", padx=(0, 10))
-        self.__combo_archivos.bind("<<ComboboxSelected>>", lambda _e: self._sincronizar_combo_tabla())
         ttk.Button(interno, text="Cargar", style="Neutro.TButton",
                    command=self._on_cargar_csv).pack(side="left")
         ttk.Button(interno, text="↻  Actualizar lista", style="Neutro.TButton",
                    command=self._actualizar_lista_archivos).pack(side="left", padx=8)
+        self.__zona_soltar = tk.Label(
+            interno,
+            text="Suelta un archivo CSV aquí",
+            bg=t.superficie_alt,
+            fg=t.texto_suave,
+            font=(t.fuente, 10),
+            padx=14,
+            pady=8,
+            relief="groove",
+            cursor="hand2",
+        )
+        self.__zona_soltar.pack(side="left", padx=4)
+        self.__zona_soltar.drop_target_register(DND_FILES)
+        self.__zona_soltar.dnd_bind("<<Drop>>", self._on_soltar_csv)
         self.__lbl_archivo = tk.Label(interno, text="Ningún archivo cargado",
                                       bg=t.superficie, fg=t.texto_suave,
                                       font=(t.fuente, 10), anchor="e")
@@ -607,9 +616,9 @@ class InterfazVibraciones(tk.Tk):
             # Cada medición parte de cero: los timestamps de phyphox reinician en 0 y
             # mezclarlos con los de otra medición dibujaría una gráfica sin sentido.
             self.__biblioteca.vaciar()
-            # Los selectores dejan de apuntar al archivo anterior
-            self.__combo_archivos.set("")
-            self._sincronizar_combo_tabla()
+            # El selector deja de apuntar al archivo anterior.
+            self.__archivo_seleccionado = ""
+            self.__tabla.set_archivo("")
             self.__lbl_archivo.config(text="Medición en curso (en vivo)...")
             self._refrescar_datos()
             self.__log.escribir("Medición iniciada. Mostrando datos en vivo.")
@@ -710,45 +719,73 @@ class InterfazVibraciones(tk.Tk):
 
     def _actualizar_lista_archivos(self, seleccionar=None):
         nombres = self._listar_csvs()
-        self.__combo_archivos["values"] = nombres
-        actual = seleccionar or self.__combo_archivos.get()
+        actual = seleccionar or self.__archivo_seleccionado
         if actual in nombres:
-            self.__combo_archivos.set(actual)
+            self.__archivo_seleccionado = actual
         elif nombres:
             clasificados = [n for n in nombres if n.startswith("Clasificado_")]
-            self.__combo_archivos.set((clasificados or nombres)[0])
+            self.__archivo_seleccionado = (clasificados or nombres)[0]
         else:
-            self.__combo_archivos.set("")
+            self.__archivo_seleccionado = ""
         self.__tabla.set_archivos(nombres)
-        self._sincronizar_combo_tabla()
-
-    def _sincronizar_combo_tabla(self):
-        """Mantiene igual el archivo mostrado en ambos selectores."""
-        self.__tabla.set_archivo(self.__combo_archivos.get())
+        self.__tabla.set_archivo(self.__archivo_seleccionado)
 
     def _on_elegir_archivo_tabla(self):
         """El selector de la tabla carga el archivo apenas se elige."""
         if self.__ocupado:
-            self._sincronizar_combo_tabla()  # vuelve al archivo anterior
+            self.__tabla.set_archivo(self.__archivo_seleccionado)
             return
-        self.__combo_archivos.set(self.__tabla.get_archivo())
-        self._on_cargar_csv()
+        self.__archivo_seleccionado = self.__tabla.get_archivo()
+        if not self.__archivo_seleccionado:
+            messagebox.showinfo("Sin archivo", "No hay ningún CSV seleccionado en la carpeta de datos.")
+            return
+        self._iniciar_carga_csv(self.__archivo_seleccionado)
 
     def _on_cargar_csv(self):
         if self.__ocupado:
             return
-        nombre = self.__combo_archivos.get()
-        if not nombre:
-            messagebox.showinfo("Sin archivo", "No hay ningún CSV seleccionado en la carpeta de datos.")
+        ruta = filedialog.askopenfilename(
+            parent=self,
+            title="Seleccionar archivo CSV",
+            filetypes=(("Archivos CSV", "*.csv"), ("Todos los archivos", "*.*")),
+        )
+        if not ruta:
             return
+        self._iniciar_carga_csv(ruta)
+
+    def _on_soltar_csv(self, evento):
+        if self.__ocupado:
+            return "break"
+        rutas = self.tk.splitlist(evento.data)
+        if len(rutas) != 1:
+            messagebox.showwarning(
+                "Selecciona un archivo",
+                "Suelta un solo archivo CSV a la vez.",
+                parent=self,
+            )
+            return "break"
+        ruta = rutas[0]
+        if not ruta.lower().endswith(".csv"):
+            messagebox.showwarning(
+                "Archivo no válido",
+                "El archivo debe tener extensión .csv.",
+                parent=self,
+            )
+            return "break"
+        self._iniciar_carga_csv(ruta)
+        return "break"
+
+    def _iniciar_carga_csv(self, ruta):
+        nombre = os.path.basename(ruta)
         self.__log.escribir(f"Cargando {nombre}...")
-        self._ejecutar_en_hilo(lambda: self._cargar_csv(nombre),
+        self._ejecutar_en_hilo(lambda: self._cargar_csv(ruta),
                                lambda salida, error: self._al_cargar_csv(nombre, salida, error))
 
-    def _cargar_csv(self, nombre):
+    def _cargar_csv(self, ruta):
         """Se ejecuta en segundo plano: reemplaza el contenido de la Biblioteca por el CSV."""
+        nombre = os.path.basename(ruta)
         if nombre.startswith("Clasificado_"):
-            df = self.__csv_manager.leer(nombre, solo_numericos=False)
+            df = self.__csv_manager.leer(ruta, solo_numericos=False)
             columnas = ["timestamp", "magnitud", "nivel", "recomendacion"]
             if set(columnas) - set(df.columns):
                 raise ValueError("el archivo clasificado no tiene las columnas esperadas.")
@@ -759,7 +796,7 @@ class InterfazVibraciones(tk.Tk):
         else:
             # CSV crudo de phyphox: se clasifica completo (y se guarda su versión Clasificado_)
             self.__biblioteca.vaciar()
-            if self.__controlador._procesar_csv(nombre) is None:
+            if self.__controlador._procesar_csv(ruta) is None:
                 raise ValueError("el archivo no tiene el formato de una medición de phyphox.")
 
     def _al_cargar_csv(self, nombre, salida, error):

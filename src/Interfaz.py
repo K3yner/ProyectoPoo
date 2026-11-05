@@ -24,6 +24,8 @@ import tkinter as tk
 from contextlib import redirect_stdout
 from tkinter import ttk, messagebox, filedialog
 
+from tkinterdnd2 import DND_FILES, TkinterDnD
+
 
 # ----------------------------------------------------------------------
 # Tema: TODOS los colores y fuentes de la interfaz están aquí
@@ -284,7 +286,7 @@ class PanelLog(tk.Frame):
 # ----------------------------------------------------------------------
 # Ventana principal
 # ----------------------------------------------------------------------
-class InterfazVibraciones(tk.Tk):
+class InterfazVibraciones(TkinterDnD.Tk):
     """
     Ventana principal.
 
@@ -510,6 +512,20 @@ class InterfazVibraciones(tk.Tk):
                    command=self._on_cargar_csv).pack(side="left")
         ttk.Button(interno, text="↻  Actualizar lista", style="Neutro.TButton",
                    command=self._actualizar_lista_archivos).pack(side="left", padx=8)
+        self.__zona_soltar = tk.Label(
+            interno,
+            text="Suelta un archivo CSV aquí",
+            bg=t.superficie_alt,
+            fg=t.texto_suave,
+            font=(t.fuente, 10),
+            padx=14,
+            pady=8,
+            relief="groove",
+            cursor="hand2",
+        )
+        self.__zona_soltar.pack(side="left", padx=4)
+        self.__zona_soltar.drop_target_register(DND_FILES)
+        self.__zona_soltar.dnd_bind("<<Drop>>", self._on_soltar_csv)
         self.__lbl_archivo = tk.Label(interno, text="Ningún archivo cargado",
                                       bg=t.superficie, fg=t.texto_suave,
                                       font=(t.fuente, 10), anchor="e")
@@ -736,6 +752,28 @@ class InterfazVibraciones(tk.Tk):
         if not ruta:
             return
         self._iniciar_carga_csv(ruta)
+
+    def _on_soltar_csv(self, evento):
+        if self.__ocupado:
+            return "break"
+        rutas = self.tk.splitlist(evento.data)
+        if len(rutas) != 1:
+            messagebox.showwarning(
+                "Selecciona un archivo",
+                "Suelta un solo archivo CSV a la vez.",
+                parent=self,
+            )
+            return "break"
+        ruta = rutas[0]
+        if not ruta.lower().endswith(".csv"):
+            messagebox.showwarning(
+                "Archivo no válido",
+                "El archivo debe tener extensión .csv.",
+                parent=self,
+            )
+            return "break"
+        self._iniciar_carga_csv(ruta)
+        return "break"
 
     def _iniciar_carga_csv(self, ruta):
         nombre = os.path.basename(ruta)

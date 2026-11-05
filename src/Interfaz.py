@@ -327,10 +327,8 @@ class InterfazVibraciones(tk.Tk):
         self._refrescar_estado()
         self._refrescar_datos()
 
-        # Al abrir, carga automáticamente el CSV más reciente de la carpeta
+        # Al abrir, solo muestra los CSV disponibles; cargar requiere pulsar el botón.
         self._actualizar_lista_archivos()
-        if self.__tabla.get_archivo():
-            self._on_cargar_csv()
 
         # Al abrir, pide la IP que muestra phyphox en el teléfono
         self.after(300, self._pedir_ip)

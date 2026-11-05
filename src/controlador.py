@@ -7,6 +7,8 @@ ni de consola -- solo expone métodos simples (iniciar, detener) que
 cualquier interfaz (botones, consola, etc.) puede llamar.
 """
 
+import os
+
 import pandas as pd
 
 
@@ -94,7 +96,7 @@ class Controlador:
 
     def _procesar_csv(self, nombre_archivo):
         """Lee un CSV crudo de la carpeta, lo clasifica, carga los registros en la
-        Biblioteca y guarda su versión Clasificado_ junto al original.
+        Biblioteca y guarda su versión Clasificado_ en la carpeta de datos.
 
         CSVManager.leer() devuelve un DataFrame con las columnas identificadas
         por nombre (el recolector guarda accX, accY, accZ, acc_time).
@@ -113,9 +115,10 @@ class Controlador:
 
         self.__biblioteca.agregar_dataframe(clasificado)
 
-        nombre_clasificado = nombre_archivo.replace("Acelerometro_", "Clasificado_", 1)
-        if nombre_clasificado == nombre_archivo:
-            nombre_clasificado = f"Clasificado_{nombre_archivo}"
+        nombre_base = os.path.basename(nombre_archivo)
+        nombre_clasificado = nombre_base.replace("Acelerometro_", "Clasificado_", 1)
+        if nombre_clasificado == nombre_base:
+            nombre_clasificado = f"Clasificado_{nombre_base}"
         ruta = self.__csv_manager.guardar(clasificado, nombre_clasificado)
         if ruta:
             print(f"Se clasificaron {len(clasificado)} muestras y se guardaron en {nombre_clasificado}.")

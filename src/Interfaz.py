@@ -22,7 +22,7 @@ import queue
 import threading
 import tkinter as tk
 from contextlib import redirect_stdout
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 
 
 # ----------------------------------------------------------------------
@@ -722,23 +722,34 @@ class InterfazVibraciones(tk.Tk):
             self.__tabla.set_archivo(self.__archivo_seleccionado)
             return
         self.__archivo_seleccionado = self.__tabla.get_archivo()
-        self._on_cargar_csv()
+        if not self.__archivo_seleccionado:
+            messagebox.showinfo("Sin archivo", "No hay ningún CSV seleccionado en la carpeta de datos.")
+            return
+        self._iniciar_carga_csv(self.__archivo_seleccionado)
 
     def _on_cargar_csv(self):
         if self.__ocupado:
             return
-        nombre = self.__tabla.get_archivo()
-        if not nombre:
-            messagebox.showinfo("Sin archivo", "No hay ningún CSV seleccionado en la carpeta de datos.")
+        ruta = filedialog.askopenfilename(
+            parent=self,
+            title="Seleccionar archivo CSV",
+            filetypes=(("Archivos CSV", "*.csv"), ("Todos los archivos", "*.*")),
+        )
+        if not ruta:
             return
+        self._iniciar_carga_csv(ruta)
+
+    def _iniciar_carga_csv(self, ruta):
+        nombre = os.path.basename(ruta)
         self.__log.escribir(f"Cargando {nombre}...")
-        self._ejecutar_en_hilo(lambda: self._cargar_csv(nombre),
+        self._ejecutar_en_hilo(lambda: self._cargar_csv(ruta),
                                lambda salida, error: self._al_cargar_csv(nombre, salida, error))
 
-    def _cargar_csv(self, nombre):
+    def _cargar_csv(self, ruta):
         """Se ejecuta en segundo plano: reemplaza el contenido de la Biblioteca por el CSV."""
+        nombre = os.path.basename(ruta)
         if nombre.startswith("Clasificado_"):
-            df = self.__csv_manager.leer(nombre, solo_numericos=False)
+            df = self.__csv_manager.leer(ruta, solo_numericos=False)
             columnas = ["timestamp", "magnitud", "nivel", "recomendacion"]
             if set(columnas) - set(df.columns):
                 raise ValueError("el archivo clasificado no tiene las columnas esperadas.")
@@ -749,7 +760,7 @@ class InterfazVibraciones(tk.Tk):
         else:
             # CSV crudo de phyphox: se clasifica completo (y se guarda su versión Clasificado_)
             self.__biblioteca.vaciar()
-            if self.__controlador._procesar_csv(nombre) is None:
+            if self.__controlador._procesar_csv(ruta) is None:
                 raise ValueError("el archivo no tiene el formato de una medición de phyphox.")
 
     def _al_cargar_csv(self, nombre, salida, error):

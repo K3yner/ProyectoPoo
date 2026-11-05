@@ -194,9 +194,36 @@ class RecolectorDatos:
         except requests.exceptions.RequestException:
             return None
 
+    def _obtener_datos_nuevos(self, desde=None, variable_tiempo="acc_time"):
+        """Pide a Phyphox solo las muestras posteriores al tiempo `desde`.
+
+        Usa el formato de phyphox `variable=umbral|variable_tiempo`, que
+        devuelve los valores cuyo tiempo es mayor que el umbral. Si `desde`
+        es None se pide el buffer completo.
+        """
+        if desde is None:
+            return self._obtener_datos(completo=True)
+        partes = []
+        for var in self.getVariables():
+            if var == variable_tiempo:
+                partes.append(f"{var}={desde!r}")
+            else:
+                partes.append(f"{var}={desde!r}|{variable_tiempo}")
+        url = f"{self.geturl()}/get?" + "&".join(partes)
+        try:
+            respuesta = requests.get(url, timeout=5)
+            respuesta.raise_for_status()
+            return respuesta.json()
+        except requests.exceptions.RequestException:
+            return None
+
     # Control de mediciones
     def _iniciar_medicion(self):
         """Limpia buffers previos y arranca la medición en Phyphox."""
+        # Cada medición empieza vacía: si no, al detener se guardarían
+        # los datos de la medición anterior con el nombre de la nueva.
+        self.setDatos([])
+        self.setNombreArchivo(None)
         self._enviar_comando("clear")
         resultado = self._enviar_comando("start")
         if resultado is not None:

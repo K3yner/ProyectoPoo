@@ -1,0 +1,248 @@
+timestamp,acc_x,acc_y,acc_z,magnitud,nivel,recomendacion
+0.040871877,0.038677126,-0.020570377,-0.057983398,0.07267141755304081,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.061009654,0.00035011768,-0.036022067,-0.0068330765,0.036666099162539635,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.081192962,-0.45922452,0.45309916,0.0887146,0.6511960448398746,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.10135015,-0.021954924,-0.33769244,-0.10263252,0.3536264086328251,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.12149277,-0.016893029,0.11116011,0.070079803,0.1324882005030099,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.14167054,-0.096870437,0.00071129203,-0.031899452,0.10199001195618723,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.16183318,0.22686408,0.015517637,-0.0533638,0.23357183692121397,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.18199313,-0.16258763,-0.19535945,-0.0057048798,0.2542294195935078,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.20217107,-0.25718915,0.062298581,0.058946609,0.27111266068727763,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.22232053,-0.29473498,-0.19537345,0.040047646,0.3558697898819795,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.24247559,-0.64652246,-0.32859716,0.060027122,0.7277160436737121,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.26263571,-0.23351598,0.19835466,0.71030998,0.7735725898367111,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.2827695,0.74878794,0.41075379,1.2170362,1.4868016569802602,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.30293104,0.44440585,0.01770252,0.97671318,1.0732094738280524,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.32311586,0.11265582,-0.28883618,-0.96036816,1.009170290584622,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.34327845,1.58053,0.68878222,-0.38422775,1.766388120249395,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+0.36343906,-0.060427666,0.049225926,-0.040397644,0.08778760874699668,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.38359348,0.12358654,-0.041199267,-0.91706848,0.9262751262341116,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.40375766,-0.31394112,1.1367736,-1.779232,2.134591238225205,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+0.42394667,0.10556805,0.13234854,-1.0346718,1.0484304855049638,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.44407867,0.011556387,-0.19095564,-0.77580261,0.7990414859136635,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.46421518,-0.19169891,-0.76935589,0.39738274,0.8868878168194599,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.48440052,-0.26202178,-0.27864742,2.2725525,2.3045161451209832,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+0.5045604,0.26392677,0.41938138,1.7666035,1.834782278098845,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+0.52472157,0.50333238,0.17760217,0.14608955,0.5533788685560516,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.54488404,0.29899001,0.20259011,-0.74608612,0.8289042629919733,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.56504021,0.48383927,0.99001986,-0.95702553,1.4594991015620165,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.58520212,-0.19545162,-0.026009679,-0.17789173,0.26556224649731436,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.60536541,0.076296866,-1.1636429,1.2476263,1.7077638580709926,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+0.62552418,1.0779935,0.22558987,0.55532074,1.2334268927516598,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.64568588,0.723575,0.38550162,-0.79552746,1.1423818185097643,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.66581915,0.35135424,0.45961881,-1.2964697,1.419694662767274,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.68600494,-0.2753098,-0.63943148,-0.44515228,0.826334469800352,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.7061668,-0.14713669,-0.51042902,0.084068298,0.5378238268531186,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.72632562,0.16883755,0.21365941,0.81210423,0.8565452364910119,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+0.74646339,-0.83191621,0.28428304,3.0814428,3.204401840744111,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.76664784,-1.2185694,0.20611155,6.196929,6.318965293835753,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.78680881,-0.0064657927,0.16257054,7.4260645,7.427846588689846,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.8069441,0.5831362,-1.6093246,6.6203251,6.838031728911881,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.82713942,-1.1308213,-2.5436704,4.2105513,5.047549719051962,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.84728859,-1.1359134,-1.8337877,4.2091169,4.729666125514195,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.86744923,0.27118015,-2.7544224,3.3042698,4.310287733152838,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.88761244,-0.7508316,-2.8846118,1.5540915,3.361537404020674,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.90774627,-3.5615778,-2.2818167,-0.86062431,4.316502992100747,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.92790647,-5.26509,-0.93081665,-4.0576782,6.712104343555191,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.94811268,-5.033658,1.1030755,-6.8876595,8.60199638500299,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.96823207,-3.5700343,0.45323849,-8.1968555,8.952039439137556,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+0.98838779,-4.6768131,-0.36414909,-6.9396653,8.376403751497627,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.0085746,-6.3406692,-0.71447992,-3.7732944,7.412983076264454,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.0287337,-7.3638134,-0.5506506,2.2654285,7.724061765801214,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.0489213,-4.3315601,0.16324043,9.6765652,10.603064387607464,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.0690562,1.8020997,-2.3783195,8.725606,9.22172256360255,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.0892186,1.2405069,-4.7142711,-1.0867949,4.994430150468503,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.1093757,2.3870971,-2.1885822,-6.1873007,6.983610424644672,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.1295365,5.4452028,-0.5994916,-5.2882905,7.6141736336905685,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.1496981,8.2692261,-1.4535422,-1.6232815,8.551486891081824,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.1698334,7.4223709,-3.1335502,1.5407443,8.202720258004009,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.1900195,-4.0765009,-1.7018397,6.3687129,7.750782022146108,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.210161,-10.211667,0.48090744,0.68578815,10.245961168744335,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.2303394,-5.7268791,0.55580854,-4.2381449,7.146183565550898,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.250482,-3.6832993,0.77315426,-2.9728427,4.796066613599099,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.2706607,-3.0891774,-0.78439331,1.1239748,3.3795871381691813,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.2907986,-3.0503469,-0.33552694,3.3742809,4.561026872307395,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.3109649,-2.669142,-0.90692711,2.9380217,4.071708156129052,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.3311263,2.2281952,-1.2987838,2.3245921,3.472091824797825,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.3513024,6.8837833,-0.89229345,3.253921,7.666202579929179,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.3714666,5.2457585,-0.98497009,3.5505934,6.410527420629321,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.3915984,1.1932712,-1.5123105,1.6732888,2.551641552680378,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+1.4117842,-4.2639294,-1.5399632,-1.880216,4.9079316205703805,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.4319448,-8.0260172,-0.57117748,-6.4962902,10.34142070370271,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.4521056,-7.3234429,0.14115095,-8.8150749,11.461164207568808,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.472242,-6.4837513,-0.67068052,-7.1773295,9.69550937453672,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.4924467,-4.974247,-1.2981663,-2.5857325,5.754509668166433,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.512587,-4.380455,-0.92897892,4.1579967,6.110672990599338,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.5327484,-1.8793206,-0.77019215,5.3481302,5.7207987643036375,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.5529083,2.5614743,-1.7623777,1.8660517,3.6261928649881088,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.5730908,6.8096614,-1.7228141,0.61363125,7.050965899561942,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.5932281,7.0359473,-0.8929348,0.54648066,7.113404816062585,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.6133846,4.250421,-1.4258566,-0.18085814,4.486853617827176,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.6335522,-1.6187687,-1.4506745,-2.5424569,3.3449896408520536,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.653711,-7.323524,-0.50039768,-4.5972519,8.661358245031723,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.6738772,-6.0194354,0.049590588,-5.8535223,8.39641501343214,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.6940316,-4.6424351,-0.099467754,-2.3938742,5.224244555648545,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.7141927,-3.25493,0.048634529,4.1378708,5.264875058327946,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.7343527,0.18635798,-0.058449745,10.898863,10.90061284342166,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.7545139,-0.016375542,-1.5830684,9.1412449,9.277323538565978,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.7746531,-0.71304059,-1.2693319,3.1892481,3.5058428086123268,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.794834,1.698586,-0.57664871,0.65886927,1.9109753659037565,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+1.8149953,2.7777147,-0.051045418,-0.09427309,2.779782726184375,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+1.8351599,1.2986169,-0.46154261,-0.023702145,1.3784009668774988,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+1.8553162,-1.9560962,-1.2700038,-2.2412634,3.2345762665067026,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.8754763,-5.4625063,-0.44546604,-4.6106534,7.162090466146357,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.8956369,-4.943006,-0.62894487,-6.6090388,8.276972503605455,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.9157978,-2.9894822,-0.73154116,-5.8750324,6.632357197402802,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.9359412,-2.2753813,-0.57981873,-2.0390959,3.1098974114020725,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.9560962,-1.8103473,-1.0365596,2.9912739,3.6468524367995285,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.9762749,-2.1354156,-0.83044767,5.4609094,5.922092079015671,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+1.9964388,-1.4005179,-1.081527,3.3754797,3.8111696688892636,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+2.0166011,-0.5074172,-1.6634059,-0.52637959,1.816993911871809,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.0367601,-0.12819135,-1.4204278,-2.5939417,2.9601658230961574,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.0569223,2.8094261,-1.9586906,-1.3542533,3.6828448078150755,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+2.0770815,5.0599241,0.013352871,-1.3053865,5.225614232921045,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+2.097241,2.4540851,0.12184048,-0.1286974,2.460475929850849,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.117378,-1.445069,0.53999615,-0.25351143,1.5633580210292417,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.1375379,-2.7983665,0.13156414,-1.2764244,3.0785424213694945,alta,Nivel alto de vibración. Riesgo potencial para la estructura.
+2.1577245,-1.6253004,-0.5309062,-1.4011927,2.2106116271231113,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.17786,0.56190795,-0.77346277,-0.99801254,1.3820326446385147,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.1980228,1.4524388,-0.74708986,-0.38297939,1.6776158498968206,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.2182052,1.0971293,-0.72185612,-0.0075817108,1.3133264793030708,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.2383676,0.45450288,-0.76542878,0.33870411,0.9524571167834671,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.2585262,0.4829998,-0.77296305,0.68335533,1.1391818074849824,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.2786698,1.1652455,-0.74897265,1.1594591,1.80640596497329,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.2988478,1.5595912,-0.40966105,0.84967518,1.8226614602038895,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.3190085,1.1162536,-0.38952613,0.52163506,1.292229020447591,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.3391689,0.75059026,-0.53872132,0.87224102,1.2705946623530457,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.3593088,0.90353048,-0.17850494,1.7918005,2.014641500042547,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.3794929,1.2415484,0.028801918,2.1406994,2.474846641952466,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.3996512,1.4027982,-0.035785198,1.1545916,1.817197054011947,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+2.4198124,0.61530501,-0.33114672,0.19578648,0.7256657296914668,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.4399466,-0.37533557,-0.16786003,0.025389671,0.41194467489253217,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.4601081,-0.24653661,-0.11515689,0.82466316,0.8683954956389109,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.4802926,0.79377508,-0.1033442,1.1071682,1.3662285037261837,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.5004541,0.91151285,-0.14283979,0.25583458,0.9574498491545879,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.5206146,-0.1037451,-0.54625821,-0.044816971,0.5578258139025379,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.5407755,-0.34545743,-0.33836782,-0.015503883,0.48381193447643994,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.5609116,0.73865616,-0.34376252,0.12320518,0.8239933915035536,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.5810986,1.2399538,-0.39036226,-0.005405426,1.299960514322258,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.6012579,0.82949704,-0.78998375,-0.16004848,1.1566136695470681,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.621393,0.63253284,-0.45515001,-0.45918655,0.9044952255166239,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.6415794,0.86010885,-0.23589122,-0.33017445,0.9510242210134363,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.6617205,0.92280781,-0.4222331,0.61018848,1.1841389386627383,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.6818992,0.97112608,-0.52863657,0.99963665,1.490575700332175,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.7020611,0.62090504,-0.5850696,0.41707802,0.949622862145116,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.7222211,0.64380801,-0.56868482,0.097711563,0.8645453879250617,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.7423819,0.4264828,-0.60550761,0.80277634,1.0922348174854835,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.7625407,-0.080185413,-0.59261179,0.83625984,1.0280802274636986,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.7827031,-0.020061731,-0.49416521,0.29773998,0.577278809168898,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.8028637,0.59443641,-0.45814329,-0.34071255,0.8242177876224309,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.823002,0.83040571,-0.38417849,-0.58192158,1.0843428796506116,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.8431837,0.67545807,-0.36965078,-0.36518002,0.8521981873308191,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.8633449,0.64290571,-0.36716014,-0.29271317,0.7961251913153311,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.8835065,0.82061958,-0.24406016,-0.31644917,0.9127551336323948,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.9036669,0.87117898,-0.26586977,-0.17187977,0.9269208192337393,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.9238268,0.58030319,-0.32191199,0.14618969,0.679522293300398,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.9439894,0.54729152,-0.36498606,-0.061695099,0.6607186368635698,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.9641484,0.57449865,-0.54495859,-0.41270828,0.8929483120803627,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+2.9842845,-0.022058725,-0.62857181,0.20265007,0.660799635703824,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.00447,-0.57203937,-0.49940476,1.186861,1.4089972279822465,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.0246096,-0.045531511,-0.61248517,1.6083965,1.721670846351335,media,El nivel de la vibración es moderado. Se recomienda observar la aparición de grietas.
+3.0447918,0.28287959,-0.45590335,1.0248671,1.1568151536188487,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.0649477,0.63996196,-0.38685536,-0.010864258,0.7478812819623591,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.0850919,0.60724163,-0.38276398,-0.62209415,0.9498693557825306,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.105273,0.67688501,-0.39761856,-0.81781673,1.1336216475910588,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.1254552,0.83042026,-0.39340177,-0.62003994,1.1085180594166268,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.1455943,0.94557774,-0.47328317,-0.087127686,1.0609926743651303,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.1657571,0.58608615,-0.43226734,0.39217472,0.8271354420284361,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.1859038,0.4133656,-0.38577408,0.4458971,0.7200812342032088,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.2060769,0.52866769,-0.49622613,0.15627861,0.7417229283824555,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.2262387,0.6544857,-0.54419315,-0.36071682,0.9244535360105044,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.2463728,0.51936805,-0.43639851,-0.58579731,0.896295330398557,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.2665577,0.4251852,-0.41694427,-0.25327587,0.6471272246700256,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.2867184,0.44790077,-0.41044301,0.13119793,0.6215235000068283,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.3068791,0.45038104,-0.4220663,0.44500446,0.7609283883566595,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.3270403,0.71911669,-0.44548547,-0.024851799,0.8462882072504694,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.3471755,0.62919891,-0.4763408,-0.65740204,1.0271169691354485,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.3673613,0.30021822,-0.16586766,1.3444805,1.3875413057397945,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.3875227,0.54263699,-0.40516636,0.56739712,0.8834897701593404,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.407682,0.50525105,-0.51395053,-0.11906719,0.7304798193980991,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.4278236,0.63979137,-0.28876549,-0.090535164,0.707753573824904,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.4480075,0.51166475,-0.3151508,-0.21868706,0.6394879774824903,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.4681402,0.2742908,-0.3161363,0.047812462,0.42126432873533387,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.4883016,0.56101882,-0.50766444,0.011236191,0.7566977943822054,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.5084615,0.54779446,-0.62994421,-0.189044,0.8559474937490125,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.5286435,0.55974841,-0.75593901,-0.55197716,1.0906148974312488,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.5488076,-0.01325202,-0.56476307,-0.4722662,0.7363207894201721,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.5689682,0.18002737,-0.45818076,0.98654079,1.102543510759153,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.5891046,0.65158206,-0.6041404,-0.11254978,0.8956630263687633,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.6092897,0.66365016,-0.24058166,0.063798904,0.7087886639527909,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.6294507,0.57262349,-0.29248595,-0.44243336,0.7805081487646828,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.6496116,0.38042754,-0.50191092,-0.39996529,0.7460642854409277,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.6697527,0.43768972,-0.23676878,0.11452579,0.5106348037017169,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.6899072,0.61424327,-0.16463049,0.18513012,0.6623225455238161,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.7100932,0.56551194,-0.24831739,0.41304779,0.7430166601650732,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.7302535,0.62095559,-0.17252673,0.20432854,0.676092796571057,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.7504138,0.49434555,-0.32107627,-0.20070648,0.6226962221468072,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.7705729,0.49140286,-0.26418868,0.20124435,0.5931034630342708,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.790736,0.3572863,-0.52784789,-0.12539864,0.6496165900429204,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.810896,0.41569495,-0.41477135,-0.026200294,0.5878129121089561,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.8310561,0.58912492,-0.41145027,-0.073549271,0.7223357884756304,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.851206,0.70597273,-0.38429558,-0.067649841,0.8066331813770834,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.8713777,0.4436281,-0.35174134,-0.092518806,0.5736615647211091,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.8915449,0.40063107,-0.30257526,-0.065628052,0.5063240893170373,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.9116977,0.5067966,-0.35046232,-0.12290573,0.6283091993423106,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.9318596,0.57913327,-0.49700221,-0.0971632,0.769316078474912,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.9519963,0.50282872,-0.5073061,-0.087861061,0.7196636483761661,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.9721566,0.42267615,-0.43780857,-0.094340324,0.6158178046116338,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+3.9923418,0.49086523,-0.38217798,0.11215782,0.632129780193107,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.0125019,0.38045186,-0.422438,-0.066233635,0.5723498720422437,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.0326858,0.47441685,-0.34623936,-0.038047791,0.5885581333879533,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.0527987,0.5711627,-0.29313338,0.0055074692,0.6420158413610239,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.0729845,0.42470703,-0.36492351,-0.050427437,0.5622171785747301,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.0931208,0.46816775,-0.45001972,-0.020745277,0.6497146735658258,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.1133046,0.37979901,-0.36542451,-0.15040493,0.5480912364506707,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.1334668,0.46998516,-0.34282023,-0.05229187,0.5840772212521007,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.1536297,0.52052259,-0.39956343,-0.06920433,0.6598362983228658,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.1737825,0.46962664,-0.46537971,0.023468018,0.6615725231191377,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.1939236,0.44986475,-0.38481522,-0.085541725,0.5981458296704798,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.2140848,0.3407304,-0.39870304,-0.17928696,0.5542608894874717,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.2342688,0.48553318,-0.38739118,-0.045873642,0.6228312662776725,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.2544309,0.43208539,-0.42109129,0.070256233,0.6074138597699813,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.2745827,0.47726771,-0.38947436,0.051013947,0.6181239090138583,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.2947513,0.464782,-0.34665537,-0.011273384,0.5799304632976684,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.3149057,0.45738557,-0.3645103,-0.032125473,0.585748550545188,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.3350731,0.45448825,-0.383578,-0.03721714,0.5958831823284175,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.3552339,0.45646584,-0.38910651,-0.038133621,0.6010150682485901,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.3753696,0.44051898,-0.3751483,-0.026808739,0.5792339140795371,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.3955545,0.43616861,-0.36373702,-0.026553154,0.5685532042431564,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.4156911,0.4500289,-0.37240109,-0.030367851,0.5849194722718302,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.4358757,0.42507327,-0.38034949,-0.021849632,0.5708155795266002,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.4560152,0.48690242,-0.35844132,-0.055023193,0.6071092967935131,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.4761764,0.45443952,-0.3680765,-0.023955345,0.5852943240320629,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.4963576,0.45108742,-0.36378142,-0.034041405,0.5804959941927652,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.516529,0.4670496,-0.35923493,-0.058425903,0.5921137136848211,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.5366795,0.43745002,-0.3649703,-0.019431114,0.5700380759838516,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.5568415,0.44306332,-0.36913988,-0.03133297,0.5775388398582884,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.5769881,0.44190574,-0.37354174,-0.027907372,0.5793038373592234,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.5971572,0.43593687,-0.35236904,-0.047074318,0.5625130099749548,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.6173232,0.42129111,-0.35627857,-0.045565605,0.5536215703576705,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.6374779,0.4404079,-0.37531745,-0.026360512,0.57923845111475,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.6576189,0.44352943,-0.36247566,-0.038160324,0.5740759267695742,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.6778041,0.44418716,-0.36364505,-0.031909943,0.5749419100749495,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.6979646,0.4204286,-0.36402389,-0.032426834,0.5570683079766391,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.718126,0.41525039,-0.35036856,-0.027693748,0.5440201815281426,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.7382631,0.42123818,-0.35806361,-0.026037216,0.5534700440972168,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.7584471,0.42784172,-0.36098734,-0.030482292,0.5606153468630762,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.7786078,0.43749422,-0.36882371,-0.023440361,0.5726967540639486,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.7987691,0.42474809,-0.34507108,-0.027435303,0.5479394912412467,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.8189552,0.42601112,-0.35015473,-0.030688286,0.5523002627218687,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.8390688,0.42688039,-0.36837399,-0.035788536,0.5649841441882201,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.8592504,0.42412204,-0.34461725,-0.031846046,0.5474072747572488,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.8794105,0.4239946,-0.34626079,-0.031113625,0.5483028480513527,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.8995463,0.42641732,-0.35491559,-0.033071518,0.5557792116693956,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.9197068,0.41958877,-0.35374093,-0.031133652,0.5496878075364551,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.9398934,0.42191848,-0.32548222,-0.034918785,0.5340161054195979,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.9600532,0.40874606,-0.33490276,-0.038284302,0.5298102377274041,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+4.9801899,0.4173263,-0.37866908,-0.038405418,0.5648242991864737,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."
+5.0003752,0.41851988,-0.36356688,-0.031306267,0.5552655657805768,baja,"El nivel de la vibración es seguro, se encuentra dentro del rango normal."

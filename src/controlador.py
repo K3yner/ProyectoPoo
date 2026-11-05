@@ -7,8 +7,7 @@ ni de consola -- solo expone métodos simples (iniciar, detener) que
 cualquier interfaz (botones, consola, etc.) puede llamar.
 """
 
-from muestra import Muestra
-from registro_clasificado import RegistroClasificado
+import pandas as pd
 
 
 class Controlador:
@@ -20,9 +19,10 @@ class Controlador:
         self.__csv_manager = csv_manager
         self.__clasificador = clasificador
         self.__biblioteca = biblioteca
+        self.__ultimo_tiempo = None  # último acc_time recibido en vivo
 
     def iniciar_medicion(self):
-        
+        self.__ultimo_tiempo = None
         self.__recolector._iniciar_medicion()
 
     def detener_medicion(self):
@@ -47,34 +47,79 @@ class Controlador:
             print("No se generó ningún archivo de medición.")
             return
 
+        # Lo mostrado en vivo se reemplaza por la medición completa guardada
+        self.__biblioteca.vaciar()
         self._procesar_csv(nombre_archivo)
 
+    # ---------------- Medición en vivo ----------------
+
+    def obtener_muestras_nuevas(self):
+        """Pide a phyphox las muestras que llegaron desde la última consulta y
+        las devuelve clasificadas en un DataFrame (sin tocar la Biblioteca).
+        Devuelve None si no hubo conexión."""
+        datos_json = self.__recolector._obtener_datos_nuevos(self.__ultimo_tiempo)
+        if datos_json is None:
+            return None
+        df = self._json_a_dataframe(datos_json)
+        if df.empty:
+            return df
+        self.__ultimo_tiempo = float(df["acc_time"].iloc[-1])
+        return self._clasificar(df)
+
+    def agregar_registros(self, df_clasificado):
+        """Agrega a la Biblioteca un DataFrame ya clasificado."""
+        self.__biblioteca.agregar_dataframe(df_clasificado)
+
+    def _json_a_dataframe(self, datos_json):
+        buffers = datos_json.get("buffer", {})
+        columnas = {var: (buffers.get(var, {}).get("buffer") or [])
+                    for var in self.__recolector.getVariables()}
+        n = min((len(valores) for valores in columnas.values()), default=0)
+        df = pd.DataFrame({var: valores[:n] for var, valores in columnas.items()})
+        return df.apply(pd.to_numeric, errors="coerce").dropna().reset_index(drop=True)
+
+    def _clasificar(self, df):
+        """Clasifica un DataFrame crudo (accX, accY, accZ, acc_time) y lo deja
+        con las columnas de los archivos Clasificado_."""
+        clasificado = self.__clasificador.clasificar_dataframe(df)
+        return pd.DataFrame({
+            "timestamp": clasificado["acc_time"],
+            "acc_x": clasificado["accX"],
+            "acc_y": clasificado["accY"],
+            "acc_z": clasificado["accZ"],
+            "magnitud": clasificado["magnitud"],
+            "nivel": clasificado["nivel"],
+            "recomendacion": clasificado["recomendacion"],
+        })
+
     def _procesar_csv(self, nombre_archivo):
-        """Lee un CSV de la carpeta y carga sus filas clasificadas en la Biblioteca.
+        """Lee un CSV crudo de la carpeta, lo clasifica, carga los registros en la
+        Biblioteca y guarda su versión Clasificado_ junto al original.
 
         CSVManager.leer() devuelve un DataFrame con las columnas identificadas
-        por nombre (el recolector guarda accX, accY, accZ, acc_time)."""
+        por nombre (el recolector guarda accX, accY, accZ, acc_time).
+        Devuelve el DataFrame clasificado, o None si el archivo no tiene datos."""
         df = self.__csv_manager.leer(nombre_archivo)
 
         requeridas = ("acc_time", "accX", "accY", "accZ")
         faltantes = [col for col in requeridas if col not in df.columns]
         if faltantes:
             raise ValueError(f"faltan las columnas {faltantes}")
+        if df.empty:
+            print(f"{nombre_archivo} no tiene muestras válidas.")
+            return None
 
-        for fila in df.itertuples(index=False):
-            muestra = Muestra(float(fila.acc_time), float(fila.accX),
-                              float(fila.accY), float(fila.accZ))
+        clasificado = self._clasificar(df)
 
-            resultado = self.__clasificador.muestraClasificacion(muestra)
+        self.__biblioteca.agregar_dataframe(clasificado)
 
-            registro = RegistroClasificado(
-                timestamp=muestra.get_timestamp(),
-                magnitud=resultado["Magnitud"],
-                nivel=resultado["Nivel"],
-                recomendacion=resultado["Recomendacion"]
-            )
-
-            self.__biblioteca.agregar(registro)
+        nombre_clasificado = nombre_archivo.replace("Acelerometro_", "Clasificado_", 1)
+        if nombre_clasificado == nombre_archivo:
+            nombre_clasificado = f"Clasificado_{nombre_archivo}"
+        ruta = self.__csv_manager.guardar(clasificado, nombre_clasificado)
+        if ruta:
+            print(f"Se clasificaron {len(clasificado)} muestras y se guardaron en {nombre_clasificado}.")
+        return clasificado
 
     def obtener_resumen(self):
         

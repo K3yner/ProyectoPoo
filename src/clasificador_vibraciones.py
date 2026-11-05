@@ -1,3 +1,9 @@
+import numpy as np
+import pandas as pd
+
+from muestra import Muestra
+
+
 class ClasificadorVibraciones:
     """
     Clase encargada de clasificar la magnitud de vibraciones en nivel baja,
@@ -50,6 +56,34 @@ class ClasificadorVibraciones:
             "Nivel":nivel,
             "Recomendacion":reco
         }
+
+    # ---------------- DataFrame completo ----------------
+
+    def clasificar_dataframe(self, df):
+        """
+        Clasifica todas las filas de un DataFrame de una vez.
+
+        Si el DataFrame ya tiene una columna `magnitud`, la usa. Si no, la
+        calcula a partir de accX, accY y accZ. Devuelve una copia con las
+        columnas `magnitud`, `nivel` y `recomendacion` agregadas.
+        """
+        resultado = df.copy()
+        if "magnitud" not in resultado.columns:
+            faltantes = [c for c in ("accX", "accY", "accZ") if c not in resultado.columns]
+            if faltantes:
+                raise KeyError(f"Faltan columnas para calcular la magnitud: {faltantes}")
+            resultado["magnitud"] = Muestra.calcular_magnitudes(
+                resultado["accX"], resultado["accY"], resultado["accZ"])
+
+        # Mismos límites que clasificarMagnitud: < medio -> baja, < alto -> media, resto -> alta
+        magnitud = resultado["magnitud"]
+        resultado["nivel"] = np.select(
+            [magnitud < self.__limiteMedio, magnitud < self.__limiteAlto],
+            ["baja", "media"],
+            default="alta",
+        )
+        resultado["recomendacion"] = resultado["nivel"].map(self.RECOMENDACIONES)
+        return resultado
 
 #Prueba
 if __name__=="__main__":

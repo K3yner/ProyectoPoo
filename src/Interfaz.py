@@ -15,9 +15,11 @@ Ejecutar:  python interfaz.py
 """
 
 import io
+import ipaddress
 import math
 import os
 import queue
+import threading
 import tkinter as tk
 from contextlib import redirect_stdout
 from tkinter import ttk, messagebox
@@ -245,12 +247,18 @@ class TablaRegistros(tk.Frame):
     def set_archivo(self, nombre):
         self.__filtro_archivo.set(nombre)
 
-    def mostrar(self, registros):
+    def mostrar(self, registros, max_filas=None, ir_al_final=False):
+        """Muestra los registros. Con max_filas solo se ven los últimos N
+        (en vivo la tabla crece cada segundo y redibujarla completa es lento)."""
+        if max_filas is not None:
+            registros = registros[-max_filas:]
         self.__arbol.delete(*self.__arbol.get_children())
         for r in registros:
             self.__arbol.insert("", "end", tags=(r.nivel,), values=(
                 f"{r.timestamp:.3f}", f"{r.magnitud:.4f}",
                 r.nivel, r.recomendacion.strip()))
+        if ir_al_final:
+            self.__arbol.yview_moveto(1.0)
 
 
 class PanelLog(tk.Frame):
@@ -299,6 +307,7 @@ class InterfazVibraciones(tk.Tk):
         self.__csv_manager = csv_manager
         self.tema = tema or Tema()
         self.__ocupado = False
+        self.__id_en_vivo = None  # actualización en vivo programada con after()
 
         self.title("Monitor de vibraciones")
         self.geometry("1360x880")
@@ -321,6 +330,9 @@ class InterfazVibraciones(tk.Tk):
         self._actualizar_lista_archivos()
         if self.__combo_archivos.get():
             self._on_cargar_csv()
+
+        # Al abrir, pide la IP que muestra phyphox en el teléfono
+        self.after(300, self._pedir_ip)
 
     # ------------------------------------------------------------------
     # Construcción de la interfaz
@@ -403,6 +415,89 @@ class InterfazVibraciones(tk.Tk):
         self.__btn_iniciar = ttk.Button(interno, text="▶  Iniciar medición",
                                         style="Iniciar.TButton", command=self._on_iniciar)
         self.__btn_iniciar.pack(side="right", padx=8)
+
+    # ------------------------------------------------------------------
+    # Ventana emergente para la IP del teléfono
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _interpretar_direccion(texto):
+        """Acepta '192.168.1.29', '192.168.1.29:8080' o 'http://192.168.1.29:8080'
+        (tal como lo muestra phyphox). Devuelve (ip, puerto o None)."""
+        texto = texto.strip()
+        for prefijo in ("http://", "https://"):
+            if texto.lower().startswith(prefijo):
+                texto = texto[len(prefijo):]
+        texto = texto.rstrip("/")
+        puerto = None
+        if ":" in texto:
+            texto, _, puerto_txt = texto.partition(":")
+            puerto = int(puerto_txt)  # ValueError si no es número
+        ipaddress.ip_address(texto)    # ValueError si no es una IP válida
+        return texto, puerto
+
+    def _pedir_ip(self):
+        t = self.tema
+        ventana = tk.Toplevel(self)
+        ventana.title("Conexión con phyphox")
+        ventana.configure(bg=t.superficie)
+        ventana.resizable(False, False)
+        ventana.transient(self)
+
+        interno = tk.Frame(ventana, bg=t.superficie)
+        interno.pack(padx=24, pady=20)
+        tk.Label(interno, text="Ingrese la IP mostrada en el teléfono",
+                 bg=t.superficie, fg=t.texto,
+                 font=(t.fuente, 13, "bold")).pack(anchor="w")
+        tk.Label(interno, text="En phyphox, activa \"Permitir acceso remoto\" y escribe la "
+                               "dirección que aparece (por ejemplo 192.168.1.29 o "
+                               "http://192.168.1.29:8080).",
+                 bg=t.superficie, fg=t.texto_suave, font=(t.fuente, 10),
+                 justify="left", wraplength=380).pack(anchor="w", pady=(4, 12))
+
+        entrada = tk.Entry(interno, width=30, bg=t.superficie_alt, fg=t.texto,
+                           insertbackground=t.texto, relief="flat",
+                           font=(t.fuente_mono, 12),
+                           highlightbackground=t.borde, highlightthickness=1)
+        entrada.insert(0, self.__entrada_ip.get())
+        entrada.pack(fill="x", ipady=5)
+        entrada.select_range(0, "end")
+        entrada.focus_set()
+
+        error = tk.Label(interno, text="", bg=t.superficie, fg=t.nivel_alta,
+                         font=(t.fuente, 9), anchor="w")
+        error.pack(fill="x", pady=(4, 8))
+
+        def aceptar(_evento=None):
+            try:
+                ip, puerto = self._interpretar_direccion(entrada.get())
+            except ValueError:
+                error.config(text="La dirección no es válida. Ejemplo: 192.168.1.29")
+                return
+            self.__entrada_ip.delete(0, "end")
+            self.__entrada_ip.insert(0, ip)
+            self.__recolector.setIP(ip)
+            if puerto is not None:
+                self.__entrada_puerto.delete(0, "end")
+                self.__entrada_puerto.insert(0, str(puerto))
+                self.__recolector.setPuerto(puerto)
+            self.__log.escribir(f"IP del teléfono: {self.__recolector.geturl()}")
+            ventana.destroy()
+
+        botones = tk.Frame(interno, bg=t.superficie)
+        botones.pack(fill="x")
+        ttk.Button(botones, text="Aceptar", style="Iniciar.TButton",
+                   command=aceptar).pack(side="right")
+        ttk.Button(botones, text="Omitir", style="Neutro.TButton",
+                   command=ventana.destroy).pack(side="right", padx=8)
+        entrada.bind("<Return>", aceptar)
+        ventana.bind("<Escape>", lambda _e: ventana.destroy())
+
+        # Centrada sobre la ventana principal y modal
+        ventana.update_idletasks()
+        x = self.winfo_rootx() + (self.winfo_width() - ventana.winfo_width()) // 2
+        y = self.winfo_rooty() + (self.winfo_height() - ventana.winfo_height()) // 3
+        ventana.geometry(f"+{max(x, 0)}+{max(y, 0)}")
+        ventana.grab_set()
 
     def _construir_archivos(self):
         t = self.tema
@@ -512,9 +607,13 @@ class InterfazVibraciones(tk.Tk):
             # Cada medición parte de cero: los timestamps de phyphox reinician en 0 y
             # mezclarlos con los de otra medición dibujaría una gráfica sin sentido.
             self.__biblioteca.vaciar()
-            self.__lbl_archivo.config(text="Medición en curso...")
+            # Los selectores dejan de apuntar al archivo anterior
+            self.__combo_archivos.set("")
+            self._sincronizar_combo_tabla()
+            self.__lbl_archivo.config(text="Medición en curso (en vivo)...")
             self._refrescar_datos()
-            self.__log.escribir("Medición iniciada.")
+            self.__log.escribir("Medición iniciada. Mostrando datos en vivo.")
+            self._programar_en_vivo()
         elif error is None:
             self.__log.escribir("No se pudo iniciar: revisa la IP/puerto y que el "
                                 "acceso remoto de phyphox esté activo.")
@@ -525,6 +624,7 @@ class InterfazVibraciones(tk.Tk):
     def _on_detener(self):
         if self.__ocupado:
             return
+        self._cancelar_en_vivo()
         self.__log.escribir("Deteniendo y procesando datos...")
         self._ejecutar_en_hilo(self.__controlador.detener_medicion, self._al_detener)
 
@@ -542,6 +642,55 @@ class InterfazVibraciones(tk.Tk):
             self.__lbl_archivo.config(text=f"Mostrando: {nombre}")
         else:
             self.__lbl_archivo.config(text="Ningún archivo cargado")
+
+    # ------------------------------------------------------------------
+    # Actualización en vivo mientras se mide
+    # ------------------------------------------------------------------
+    INTERVALO_EN_VIVO_MS = 1000
+    MAX_FILAS_EN_VIVO = 500
+
+    def _programar_en_vivo(self):
+        self.__id_en_vivo = self.after(self.INTERVALO_EN_VIVO_MS, self._tick_en_vivo)
+
+    def _cancelar_en_vivo(self):
+        if self.__id_en_vivo is not None:
+            self.after_cancel(self.__id_en_vivo)
+            self.__id_en_vivo = None
+
+    def _sigue_en_vivo(self):
+        return self.__recolector.getMidiendo() and not self.__ocupado
+
+    def _tick_en_vivo(self):
+        """Pide en segundo plano las muestras nuevas y las agrega a la vista."""
+        self.__id_en_vivo = None
+        if not self._sigue_en_vivo():
+            return
+        resultado = queue.Queue()
+
+        def tarea():
+            try:
+                resultado.put((self.__controlador.obtener_muestras_nuevas(), None))
+            except Exception as e:  # noqa: BLE001
+                resultado.put((None, e))
+
+        threading.Thread(target=tarea, daemon=True).start()
+
+        def revisar():
+            try:
+                df, error = resultado.get_nowait()
+            except queue.Empty:
+                self.after(100, revisar)
+                return
+            if not self._sigue_en_vivo():
+                return  # se detuvo la medición mientras se esperaba la respuesta
+            if error is not None:
+                self.__log.escribir(f"En vivo: {error}")
+            elif df is not None and not df.empty:
+                self.__controlador.agregar_registros(df)
+                self._refrescar_datos()
+            self._programar_en_vivo()
+
+        self.after(100, revisar)
 
     # ------------------------------------------------------------------
     # Carga de CSV desde la carpeta de datos
@@ -626,8 +775,6 @@ class InterfazVibraciones(tk.Tk):
     # Ejecución en segundo plano (las llamadas de red no congelan la ventana)
     # ------------------------------------------------------------------
     def _ejecutar_en_hilo(self, funcion, al_terminar):
-        import threading
-
         self.__ocupado = True
         self._refrescar_estado()
         resultado = queue.Queue()
@@ -707,7 +854,10 @@ class InterfazVibraciones(tk.Tk):
         filtro = self.__tabla.get_filtro()
         if filtro != "todos":
             registros = [r for r in registros if r.nivel == filtro]
-        self.__tabla.mostrar(registros)
+        if self.__recolector.getMidiendo():
+            self.__tabla.mostrar(registros, max_filas=self.MAX_FILAS_EN_VIVO, ir_al_final=True)
+        else:
+            self.__tabla.mostrar(registros)
 
     def _refrescar_recomendacion(self, registros):
         t = self.tema
@@ -731,7 +881,7 @@ def main():
     from csv_manager import CSVManager
     from clasificador_vibraciones import ClasificadorVibraciones
     from biblioteca import Biblioteca
-    from Controlador import Controlador
+    from controlador import Controlador
 
     recolector = RecolectorDatos(
         ip="10.100.8.248",
